@@ -1,0 +1,157 @@
+OBJECT Codeunit 85010 Log Customer Record Events
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.11.16;
+    Time=10:10:26;
+    Version List=EventLogging110.0;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      EventingLogMgt@1000 : Codeunit 85000;
+      ObjType@1001 : 'TableData,Table,,Report,,Codeunit,XMLport,MenuSuite,Page,Query,System,FieldNumber';
+
+    [EventSubscriber(Table,18,OnBeforeInsertEvent)]
+    LOCAL PROCEDURE OnBeforeCustomerInsert@2(VAR Rec@1000 : Record 18;RunTrigger@1001 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::Customer,'OnBeforeCustomerInsert','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,18,OnAfterInsertEvent)]
+    LOCAL PROCEDURE OnAfterCustomerInsert@3(VAR Rec@1000 : Record 18;RunTrigger@1001 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::Customer,'OnAfterCustomerInsert','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,18,OnBeforeModifyEvent)]
+    LOCAL PROCEDURE OnBeforeCustomerModify@4(VAR Rec@1000 : Record 18;VAR xRec@1001 : Record 18;RunTrigger@1002 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::Customer,'OnBeforeCustomerModify','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        LogRecord(Rec.RECORDID,'DatabaseRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,18,OnAfterModifyEvent)]
+    LOCAL PROCEDURE OnAfterCustomerModify@5(VAR Rec@1000 : Record 18;VAR xRec@1001 : Record 18;RunTrigger@1002 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::Customer,'OnAfterCustomerModify','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        LogRecord(Rec.RECORDID,'DatabaseRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,18,OnBeforeDeleteEvent)]
+    LOCAL PROCEDURE OnBeforeCustomerDelete@6(VAR Rec@1000 : Record 18;RunTrigger@1001 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::Customer,'OnBeforeCustomerDelete','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,18,OnAfterDeleteEvent)]
+    LOCAL PROCEDURE OnAfterCustomerDelete@7(VAR Rec@1000 : Record 18;RunTrigger@1001 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::Customer,'OnAfterCustomerDelete','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,18,OnBeforeValidateEvent,Name)]
+    LOCAL PROCEDURE OnBeforeNameValidate@8(VAR Rec@1000 : Record 18;VAR xRec@1001 : Record 18;CurrFieldNo@1002 : Integer);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::Customer,'OnBeforeCustomerNameValidate','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(CurrFieldNo,'CurrFieldNo');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        LogRecord(Rec.RECORDID,'DatabaseRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,18,OnAfterValidateEvent,Name)]
+    LOCAL PROCEDURE OnAfterNameValidatea@9(VAR Rec@1000 : Record 18;VAR xRec@1001 : Record 18;CurrFieldNo@1002 : Integer);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::Customer,'OnAfterCustomerNameValidate','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(CurrFieldNo,'CurrFieldNo');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        LogRecord(Rec.RECORDID,'DatabaseRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,18,OnBeforeValidateEvent,"Search Name")]
+    LOCAL PROCEDURE OnBeforeSearchNameValidate@10(VAR Rec@1000 : Record 18;VAR xRec@1001 : Record 18;CurrFieldNo@1002 : Integer);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::Customer,'OnBeforeCustomerSearchNameValidate','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(CurrFieldNo,'CurrFieldNo');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        LogRecord(Rec.RECORDID,'DatabaseRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,18,OnAfterValidateEvent,"Search Name")]
+    LOCAL PROCEDURE OnAfterSearchNameValidate@11(VAR Rec@1000 : Record 18;VAR xRec@1001 : Record 18;CurrFieldNo@1002 : Integer);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::Customer,'OnAfterCustomerSearchNameValidate','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(CurrFieldNo,'CurrFieldNo');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        LogRecord(Rec.RECORDID,'DatabaseRec');
+        EndLog;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,79 @@
+OBJECT Codeunit 85000 Eventing Log Management
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.11.16;
+    Time=15:49:02;
+    Version List=EventLogging110.0;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      EventPublisherLog@1000 : Record 85000;
+      JSon@1002 : Codeunit 85001;
+
+    PROCEDURE StartLog@1(ObjectType@1002 : Integer;ObjectId@1001 : Integer;ObjectMethod@1000 : Text;Context@1003 : Text);
+    BEGIN
+      WITH EventPublisherLog DO BEGIN
+        INIT;
+        "Entry No." := 0;
+        "Object Type" := ObjectType;
+        "Object ID" := ObjectId;
+        Publisher := ObjectMethod;
+        "Record Context" := Context;
+        "User ID" := USERID;
+        "Date & Time" := CURRENTDATETIME;
+      END;
+      JSon.StartJSon;
+    END;
+
+    PROCEDURE LogVariable@3(VariableValue@1001 : Variant;VariableName@1000 : Text);
+    BEGIN
+      JSon.AddToJSon(VariableName,VariableValue);
+    END;
+
+    PROCEDURE LogRecord@4(RecVariant@1000 : Variant;RecordName@1003 : Text);
+    VAR
+      DataTypeMgt@1001 : Codeunit 701;
+      RecRef@1002 : RecordRef;
+    BEGIN
+      IF NOT DataTypeMgt.GetRecordRef(RecVariant,RecRef) THEN EXIT;
+      JSon.AddJSonBranch(RecordName);
+      LogFields(RecRef);
+      JSon.EndJSonBranch;
+    END;
+
+    PROCEDURE EndLog@6();
+    VAR
+      TempBlob@1000 : Record 99008535;
+    BEGIN
+      WITH EventPublisherLog DO BEGIN
+        JSon.EndJSon;
+        JSon.SaveJSon(TempBlob);
+        "Detailed Info" := TempBlob.Blob;
+        INSERT;
+      END;
+    END;
+
+    LOCAL PROCEDURE LogFields@5(VAR RecRef@1000 : RecordRef);
+    VAR
+      FldRef@1001 : FieldRef;
+      FieldIndex@1002 : Integer;
+    BEGIN
+      FOR FieldIndex := 1 TO RecRef.FIELDCOUNT DO BEGIN
+        FldRef := RecRef.FIELDINDEX(FieldIndex);
+        JSon.AddToJSon(FldRef.NAME,FldRef.VALUE);
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

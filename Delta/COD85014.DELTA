@@ -1,0 +1,101 @@
+OBJECT Codeunit 85014 Log SalesInvHdr Events
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.11.16;
+    Time=11:07:43;
+    Version List=EventLogging110.0;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      EventingLogMgt@1000 : Codeunit 85000;
+      ObjType@1001 : 'TableData,Table,,Report,,Codeunit,XMLport,MenuSuite,Page,Query,System,FieldNumber';
+
+    [EventSubscriber(Table,112,OnBeforeInsertEvent)]
+    LOCAL PROCEDURE OnBeforeSalesInvHdrInsert@2(VAR Rec@1000 : Record 112;RunTrigger@1001 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::"Sales Invoice Header",'OnBeforeSalesInvHdrInsert','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,112,OnAfterInsertEvent)]
+    LOCAL PROCEDURE OnAfterSalesInvHdrInsert@3(VAR Rec@1000 : Record 112;RunTrigger@1001 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::"Sales Invoice Header",'OnAfterSalesInvHdrInsert','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,112,OnBeforeModifyEvent)]
+    LOCAL PROCEDURE OnBeforeSalesInvHdrModify@4(VAR Rec@1000 : Record 112;VAR xRec@1001 : Record 112;RunTrigger@1002 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::"Sales Invoice Header",'OnBeforeSalesInvHdrModify','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        LogRecord(Rec.RECORDID,'DatabaseRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,112,OnAfterModifyEvent)]
+    LOCAL PROCEDURE OnAfterSalesInvHdrModify@5(VAR Rec@1000 : Record 112;VAR xRec@1001 : Record 112;RunTrigger@1002 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::"Sales Invoice Header",'OnAfterSalesInvHdrModify','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        LogRecord(Rec.RECORDID,'DatabaseRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,112,OnBeforeDeleteEvent)]
+    LOCAL PROCEDURE OnBeforeSalesInvHdrDelete@6(VAR Rec@1000 : Record 112;RunTrigger@1001 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::"Sales Invoice Header",'OnBeforeSalesInvHdrDelete','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,112,OnAfterDeleteEvent)]
+    LOCAL PROCEDURE OnAfterSalesInvHdrDelete@7(VAR Rec@1000 : Record 112;RunTrigger@1001 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::"Sales Invoice Header",'OnAfterSalesInvHdrDelete','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

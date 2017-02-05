@@ -1,0 +1,74 @@
+OBJECT Codeunit 85022 Log Sales Posting Events
+{
+  OBJECT-PROPERTIES
+  {
+    Date=25.10.16;
+    Time=12:01:01;
+    Version List=EventLogging110.0;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      EventingLogMgt@1001 : Codeunit 85000;
+      ObjType@1000 : 'TableData,Table,,Report,,Codeunit,XMLport,MenuSuite,Page,Query,System,FieldNumber';
+
+    [EventSubscriber(Codeunit,80,OnBeforePostSalesDoc)]
+    LOCAL PROCEDURE OnBeforePostSalesDoc@6(VAR SalesHeader@1000 : Record 36);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Codeunit,CODEUNIT::"Sales-Post",'OnBeforePostSalesDoc',SalesHeader.TABLECAPTION);
+        LogVariable(SalesHeader.ISTEMPORARY,'IsTemporary');
+        LogRecord(SalesHeader,'SalesHeader');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Codeunit,80,OnBeforePostCommitSalesDoc)]
+    LOCAL PROCEDURE OnBeforePostCommitSalesDoc@9(VAR SalesHeader@1000 : Record 36;VAR GenJnlPostLine@1001 : Codeunit 12;PreviewMode@1002 : Boolean;ModifyHeader@1003 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Codeunit,CODEUNIT::"Sales-Post",'OnBeforePostCommitSalesDoc',SalesHeader.TABLECAPTION);
+        LogVariable(SalesHeader.ISTEMPORARY,'IsTemporary');
+        LogRecord(SalesHeader,'SalesHeader');
+        LogVariable(PreviewMode,'PreviewMode');
+        LogVariable(ModifyHeader,'ModifyHeader');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Codeunit,80,OnAfterPostSalesDoc)]
+    LOCAL PROCEDURE OnAfterPostSalesDoc@10(VAR SalesHeader@1000 : Record 36;VAR GenJnlPostLine@1001 : Codeunit 12;SalesShptHdrNo@1002 : Code[20];RetRcpHdrNo@1003 : Code[20];SalesInvHdrNo@1004 : Code[20];SalesCrMemoHdrNo@1005 : Code[20]);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Codeunit,CODEUNIT::"Sales-Post",'OnAfterPostSalesDoc',SalesHeader.TABLECAPTION);
+        LogVariable(SalesHeader.ISTEMPORARY,'IsTemporary');
+        LogRecord(SalesHeader,'SalesHeader');
+        LogVariable(SalesShptHdrNo,'SalesShptHdrNo');
+        LogVariable(RetRcpHdrNo,'RetRcpHdrNo');
+        LogVariable(SalesInvHdrNo,'SalesInvHdrNo');
+        LogVariable(SalesCrMemoHdrNo,'SalesCrMemoHdrNo');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Codeunit,80,OnSendSalesDocument)]
+    LOCAL PROCEDURE OnSendSalesDocument@11(ShipAndInvoice@1000 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Codeunit,CODEUNIT::"Sales-Post",'OnSendSalesDocument','');
+        LogVariable(ShipAndInvoice,'ShipAndInvoice');
+        EndLog;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

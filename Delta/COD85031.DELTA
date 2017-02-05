@@ -1,0 +1,58 @@
+OBJECT Codeunit 85031 Temporary Customer Test
+{
+  OBJECT-PROPERTIES
+  {
+    Date=25.10.16;
+    Time=12:14:50;
+    Version List=EventLogging110.0;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+            TestTemporaryCustomerRecord;
+          END;
+
+  }
+  CODE
+  {
+
+    LOCAL PROCEDURE TestTemporaryCustomerRecord@2();
+    VAR
+      TempCust@1000 : TEMPORARY Record 18;
+    BEGIN
+      NewCustomer(TempCust,'TEST');
+      ModifyCustomer(TempCust,'TEST');
+      DeleteCustomer(TempCust,'TEST');
+    END;
+
+    LOCAL PROCEDURE NewCustomer@3(VAR TempCust@1000 : TEMPORARY Record 18;No@1001 : Code[20]);
+    BEGIN
+      WITH TempCust DO BEGIN
+        INIT;
+        "No." := No;
+        INSERT;
+      END;
+    END;
+
+    LOCAL PROCEDURE ModifyCustomer@4(VAR TempCust@1000 : TEMPORARY Record 18;No@1001 : Code[20]);
+    BEGIN
+      WITH TempCust DO BEGIN
+        GET(No);
+        Name := 'Testing...';
+        MODIFY;
+      END;
+    END;
+
+    LOCAL PROCEDURE DeleteCustomer@5(VAR TempCust@1000 : TEMPORARY Record 18;No@1001 : Code[20]);
+    BEGIN
+      WITH TempCust DO BEGIN
+        GET(No);
+        DELETE;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,114 @@
+OBJECT Page 85000 Event Publisher Log Entries
+{
+  OBJECT-PROPERTIES
+  {
+    Date=20.11.16;
+    Time=10:36:06;
+    Version List=EventLogging110.0;
+  }
+  PROPERTIES
+  {
+    SourceTable=Table85000;
+    PageType=List;
+    PromotedActionCategoriesML=ENU=New,Action,Reports,Tests;
+    ActionList=ACTIONS
+    {
+      { 10      ;    ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 12      ;1   ;Action    ;
+                      Name=Save Details;
+                      Promoted=Yes;
+                      PromotedIsBig=Yes;
+                      Image=ExportMessage;
+                      PromotedCategory=Process;
+                      Scope=Repeater;
+                      OnAction=BEGIN
+                                 OpenDetails;
+                               END;
+                                }
+      { 20      ;1   ;Action    ;
+                      Name=Customer;
+                      Promoted=Yes;
+                      Image=Customer;
+                      PromotedCategory=Category4;
+                      OnAction=BEGIN
+                                 CODEUNIT.RUN(CODEUNIT::"Database Customer Test");
+                               END;
+                                }
+      { 16      ;1   ;Action    ;
+                      Name=Temporary Customer;
+                      Promoted=Yes;
+                      Image=Customer;
+                      PromotedCategory=Category4;
+                      OnAction=BEGIN
+                                 CODEUNIT.RUN(CODEUNIT::"Temporary Customer Test");
+                               END;
+                                }
+      { 15      ;1   ;Action    ;
+                      Name=My Customer Card;
+                      RunObject=Page 85011;
+                      Promoted=Yes;
+                      Image=Card;
+                      PromotedCategory=Category4 }
+      { 17      ;1   ;Action    ;
+                      Name=Sales Posting;
+                      RunObject=Page 43;
+                      Promoted=Yes;
+                      Image=SalesInvoice;
+                      PromotedCategory=Category4;
+                      RunPageMode=Create }
+    }
+  }
+  CONTROLS
+  {
+    { 1   ;0   ;Container ;
+                ContainerType=ContentArea }
+
+    { 2   ;1   ;Group     ;
+                Name=Group;
+                GroupType=Repeater }
+
+    { 3   ;2   ;Field     ;
+                SourceExpr="Object Type" }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr="Object ID";
+                Visible=FALSE }
+
+    { 5   ;2   ;Field     ;
+                SourceExpr="Object Name" }
+
+    { 6   ;2   ;Field     ;
+                SourceExpr=Publisher }
+
+    { 14  ;2   ;Field     ;
+                SourceExpr="Record Context" }
+
+    { 7   ;2   ;Field     ;
+                SourceExpr="Date & Time" }
+
+    { 8   ;2   ;Field     ;
+                SourceExpr="User ID";
+                Visible=FALSE }
+
+    { 9   ;2   ;Field     ;
+                SourceExpr="Entry No.";
+                Visible=FALSE }
+
+    { 13  ;0   ;Container ;
+                ContainerType=FactBoxArea }
+
+    { 11  ;1   ;Part      ;
+                SubPageLink=Entry No.=FIELD(Entry No.);
+                PagePartID=Page85001;
+                PartType=Page }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,58 @@
+OBJECT Codeunit 85032 Database Customer Test
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.11.16;
+    Time=15:40:27;
+    Version List=EventLogging110.0;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+            TestCustomerRecord;
+          END;
+
+  }
+  CODE
+  {
+
+    LOCAL PROCEDURE TestCustomerRecord@2();
+    VAR
+      Cust@1000 : Record 18;
+    BEGIN
+      NewCustomer(Cust,'TEST');
+      ModifyCustomer(Cust,'TEST');
+      DeleteCustomer(Cust,'TEST');
+    END;
+
+    LOCAL PROCEDURE NewCustomer@3(VAR Cust@1000 : Record 18;No@1001 : Code[20]);
+    BEGIN
+      WITH Cust DO BEGIN
+        INIT;
+        "No." := No;
+        INSERT;
+      END;
+    END;
+
+    LOCAL PROCEDURE ModifyCustomer@4(VAR Cust@1000 : Record 18;No@1001 : Code[20]);
+    BEGIN
+      WITH Cust DO BEGIN
+        GET(No);
+        Name := 'Testing...';
+        MODIFY;
+      END;
+    END;
+
+    LOCAL PROCEDURE DeleteCustomer@5(VAR Cust@1000 : Record 18;No@1001 : Code[20]);
+    BEGIN
+      WITH Cust DO BEGIN
+        GET(No);
+        DELETE;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

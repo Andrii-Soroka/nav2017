@@ -1,0 +1,21 @@
+OBJECT Modification "Log Global Events"(Codeunit 85021)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Log Global Events"(Codeunit 85021);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

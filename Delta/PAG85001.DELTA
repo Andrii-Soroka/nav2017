@@ -1,0 +1,33 @@
+OBJECT Page 85001 Event Publisher Log Details
+{
+  OBJECT-PROPERTIES
+  {
+    Date=24.10.16;
+    Time=11:11:59;
+    Version List=EventLogging110.0;
+  }
+  PROPERTIES
+  {
+    SourceTable=Table85000;
+    PageType=CardPart;
+  }
+  CONTROLS
+  {
+    { 1   ;0   ;Container ;
+                ContainerType=ContentArea }
+
+    { 2   ;1   ;Field     ;
+                CaptionML=ENU=Activity Message;
+                SourceExpr=GetBlobContent;
+                MultiLine=Yes;
+                ShowCaption=No }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

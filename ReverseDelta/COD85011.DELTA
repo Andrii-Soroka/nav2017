@@ -1,0 +1,21 @@
+OBJECT Modification "Log Customer Card Events"(Codeunit 85011)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Log Customer Card Events"(Codeunit 85011);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,21 @@
+OBJECT Modification "Dept - Company"(MenuSuite 1090)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Dept - Company"(MenuSuite 1090);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

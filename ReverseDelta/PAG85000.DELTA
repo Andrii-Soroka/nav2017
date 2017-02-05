@@ -1,0 +1,21 @@
+OBJECT Modification "Event Publisher Log Entries"(Page 85000)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Event Publisher Log Entries"(Page 85000);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

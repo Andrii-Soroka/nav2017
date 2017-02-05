@@ -1,9 +1,12 @@
-# nav2017
-NAV 2017 Source Code Management
+# EventLogging
+Event Logging for Dynamics NAV
 
-Base objects stored locally in Work Folder as "baseObjects"
+As shown in my session @NAVTechDays 2016.
+
+Use and add to as needed
 
 Gunnar Thor Gestsson
 http://www.dynamics.is
 @gunnargestsson
 gunnar@dynamics.is
+

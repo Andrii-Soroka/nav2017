@@ -1,0 +1,71 @@
+OBJECT Codeunit 85021 Log Global Events
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.11.16;
+    Time=14:11:43;
+    Version List=EventLogging110.0;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      EventingLogMgt@1001 : Codeunit 85000;
+      ObjType@1000 : 'TableData,Table,,Report,,Codeunit,XMLport,MenuSuite,Page,Query,System,FieldNumber';
+
+    [EventSubscriber(Codeunit,1,OnAfterGetGlobalTableTriggerMask)]
+    LOCAL PROCEDURE EnableGlobalLogging@2(TableID@1000 : Integer;VAR TableTriggerMask@1001 : Integer);
+    BEGIN
+      IF TableID IN [DATABASE::Customer,DATABASE::"Cust. Ledger Entry",DATABASE::"Sales Invoice Header"] THEN BEGIN
+        TableTriggerMask := 1; //Log Insertion
+        TableTriggerMask += 2; //Log Modify
+        TableTriggerMask += 4; //Log Delete
+        TableTriggerMask += 8; //Log Renamt
+      END;
+    END;
+
+    [EventSubscriber(Codeunit,1,OnAfterOnGlobalInsert)]
+    LOCAL PROCEDURE LogInsert@3(RecRef@1000 : RecordRef);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Codeunit,CODEUNIT::ApplicationManagement,'OnAfterOnGlobalInsert',RecRef.CAPTION);
+        LogVariable(RecRef.ISTEMPORARY,'IsTemporary');
+        LogRecord(RecRef,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Codeunit,1,OnAfterOnGlobalModify)]
+    LOCAL PROCEDURE LogModify@4(RecRef@1000 : RecordRef;xRecRef@1001 : RecordRef);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Codeunit,CODEUNIT::ApplicationManagement,'OnAfterOnGlobalModify',RecRef.CAPTION);
+        LogVariable(RecRef.ISTEMPORARY,'IsTemporary');
+        LogRecord(RecRef,'Rec');
+        LogRecord(xRecRef,'xRec');
+        LogRecord(RecRef.RECORDID,'DatabaseRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Codeunit,1,OnAfterOnGlobalDelete)]
+    LOCAL PROCEDURE LogDelete@5(RecRef@1000 : RecordRef);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Codeunit,CODEUNIT::ApplicationManagement,'OnAfterOnGlobalDelete',RecRef.CAPTION);
+        LogVariable(RecRef.ISTEMPORARY,'IsTemporary');
+        LogRecord(RecRef,'Rec');
+        EndLog;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

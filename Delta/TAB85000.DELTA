@@ -1,0 +1,81 @@
+OBJECT Table 85000 Event Publisher Log Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=24.10.16;
+    Time=14:36:38;
+    Version List=EventLogging110.0;
+  }
+  PROPERTIES
+  {
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;AutoIncrement=Yes }
+    { 3   ;   ;Object Type         ;Option        ;CaptionML=ENU=Object Type;
+                                                   OptionCaptionML=ENU=TableData,Table,,Report,,Codeunit,XMLport,MenuSuite,Page,Query,System,FieldNumber;
+                                                   OptionString=TableData,Table,,Report,,Codeunit,XMLport,MenuSuite,Page,Query,System,FieldNumber }
+    { 4   ;   ;Object ID           ;Integer       ;TableRelation=IF (Object Type=CONST(Table)) AllObjWithCaption."Object ID" WHERE (Object Type=CONST(Table))
+                                                                 ELSE IF (Object Type=CONST(Report)) AllObjWithCaption."Object ID" WHERE (Object Type=CONST(Report))
+                                                                 ELSE IF (Object Type=CONST(Codeunit)) AllObjWithCaption."Object ID" WHERE (Object Type=CONST(Codeunit))
+                                                                 ELSE IF (Object Type=CONST(XMLport)) AllObjWithCaption."Object ID" WHERE (Object Type=CONST(XMLport))
+                                                                 ELSE IF (Object Type=CONST(Page)) AllObjWithCaption."Object ID" WHERE (Object Type=CONST(Page))
+                                                                 ELSE IF (Object Type=CONST(Query)) AllObjWithCaption."Object ID" WHERE (Object Type=CONST(Query));
+                                                   CaptionML=ENU=Object ID }
+    { 5   ;   ;Object Name         ;Text249       ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=FIELD(Object Type),
+                                                                                                                Object ID=FIELD(Object ID)));
+                                                   CaptionML=ENU=Object Name }
+    { 6   ;   ;Publisher           ;Text50        ;CaptionML=ENU=Publisher }
+    { 20  ;   ;Record Context      ;Text250       ;CaptionML=ENU=Record Context }
+    { 21  ;   ;Detailed Info       ;BLOB          ;CaptionML=ENU=Detailed Info }
+    { 26  ;   ;Date & Time         ;DateTime       }
+    { 27  ;   ;User ID             ;Code50        ;TableRelation=User."User Name";
+                                                   OnLookup=VAR
+                                                              UserMgt@1000 : Codeunit 418;
+                                                            BEGIN
+                                                              UserMgt.LookupUserID("User ID");
+                                                            END;
+
+                                                   ValidateTableRelation=No;
+                                                   TestTableRelation=No;
+                                                   CaptionML=ENU=User ID }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE GetBlobContent@1() Content : Text;
+    VAR
+      InStr@1000 : InStream;
+      TextPart@1001 : Text;
+    BEGIN
+      CALCFIELDS("Detailed Info");
+      "Detailed Info".CREATEINSTREAM(InStr);
+      WHILE InStr.READTEXT(TextPart) > 0 DO
+        Content += TextPart;
+    END;
+
+    PROCEDURE OpenDetails@2();
+    VAR
+      InStr@1000 : InStream;
+      TXTFileType@1001 : TextConst '@@@="{Split=r''\|''}{Locked=s''1''}";ENU=Text Files (*.txt)|*.txt';
+      FileName@1002 : Text;
+    BEGIN
+      CALCFIELDS("Detailed Info");
+      "Detailed Info".CREATEINSTREAM(InStr);
+      FileName := STRSUBSTNO('%1-%2-%3.txt',TABLECAPTION,Publisher,"Entry No.");
+      DOWNLOADFROMSTREAM(InStr,TABLECAPTION,'',TXTFileType,FileName);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

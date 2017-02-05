@@ -1,0 +1,21 @@
+OBJECT Modification "Eventing Log Management"(Codeunit 85000)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Eventing Log Management"(Codeunit 85000);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

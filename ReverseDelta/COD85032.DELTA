@@ -1,0 +1,21 @@
+OBJECT Modification "Database Customer Test"(Codeunit 85032)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Database Customer Test"(Codeunit 85032);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

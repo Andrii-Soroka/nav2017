@@ -1,0 +1,21 @@
+OBJECT Modification "Temporary Customer Test"(Codeunit 85031)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Temporary Customer Test"(Codeunit 85031);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

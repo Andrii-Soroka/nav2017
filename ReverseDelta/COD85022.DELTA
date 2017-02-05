@@ -1,0 +1,21 @@
+OBJECT Modification "Log Sales Posting Events"(Codeunit 85022)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Log Sales Posting Events"(Codeunit 85022);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

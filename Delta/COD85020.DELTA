@@ -1,0 +1,67 @@
+OBJECT Codeunit 85020 Log Database Events
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.11.16;
+    Time=10:10:31;
+    Version List=EventLogging110.0;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      EventingLogMgt@1001 : Codeunit 85000;
+      ObjType@1000 : 'TableData,Table,,Report,,Codeunit,XMLport,MenuSuite,Page,Query,System,FieldNumber';
+
+    [EventSubscriber(Codeunit,1,OnAfterGetDatabaseTableTriggerSetup)]
+    LOCAL PROCEDURE EnableDatabaseLogging@2(TableId@1000 : Integer;VAR OnDatabaseInsert@1001 : Boolean;VAR OnDatabaseModify@1002 : Boolean;VAR OnDatabaseDelete@1003 : Boolean;VAR OnDatabaseRename@1004 : Boolean);
+    BEGIN
+      OnDatabaseDelete := TableId IN [DATABASE::Customer,DATABASE::"Cust. Ledger Entry",DATABASE::"Sales Invoice Header"];
+      OnDatabaseInsert := TableId IN [DATABASE::Customer,DATABASE::"Cust. Ledger Entry",DATABASE::"Sales Invoice Header"];
+      OnDatabaseModify := TableId IN [DATABASE::Customer,DATABASE::"Cust. Ledger Entry",DATABASE::"Sales Invoice Header"];
+    END;
+
+    [EventSubscriber(Codeunit,1,OnAfterOnDatabaseInsert)]
+    LOCAL PROCEDURE LogInsert@3(RecRef@1000 : RecordRef);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Codeunit,CODEUNIT::ApplicationManagement,'OnAfterOnDatabaseInsert',RecRef.CAPTION);
+        LogVariable(RecRef.ISTEMPORARY,'IsTemporary');
+        LogRecord(RecRef,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Codeunit,1,OnAfterOnDatabaseModify)]
+    LOCAL PROCEDURE LogModify@4(RecRef@1000 : RecordRef);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Codeunit,CODEUNIT::ApplicationManagement,'OnAfterOnDatabaseModify',RecRef.CAPTION);
+        LogVariable(RecRef.ISTEMPORARY,'IsTemporary');
+        LogRecord(RecRef,'Rec');
+        LogRecord(RecRef.RECORDID,'xRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Codeunit,1,OnAfterOnDatabaseDelete)]
+    LOCAL PROCEDURE LogDelete@5(RecRef@1000 : RecordRef);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Codeunit,CODEUNIT::ApplicationManagement,'OnAfterOnDatabaseDelete',RecRef.CAPTION);
+        LogVariable(RecRef.ISTEMPORARY,'IsTemporary');
+        LogRecord(RecRef,'Rec');
+        EndLog;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

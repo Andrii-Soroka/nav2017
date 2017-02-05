@@ -1,0 +1,167 @@
+OBJECT Codeunit 85011 Log Customer Card Events
+{
+  OBJECT-PROPERTIES
+  {
+    Date=20.11.16;
+    Time=10:35:48;
+    Version List=EventLogging110.0;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      EventingLogMgt@1000 : Codeunit 85000;
+      ObjType@1001 : 'TableData,Table,,Report,,Codeunit,XMLport,MenuSuite,Page,Query,System,FieldNumber';
+
+    [EventSubscriber(Page,21,OnOpenPageEvent)]
+    LOCAL PROCEDURE OnOpenPage@12(VAR Rec@1000 : Record 18);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Page,PAGE::"Customer Card",'OnOpenPageEvent','');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Page,21,OnClosePageEvent)]
+    LOCAL PROCEDURE OnClosePage@17(VAR Rec@1000 : Record 18);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Page,PAGE::"Customer Card",'OnClosePageEvent','');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Page,21,OnQueryClosePageEvent)]
+    LOCAL PROCEDURE OnQueryClosePage@18(VAR Rec@1000 : Record 18;VAR AllowClose@1001 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Page,PAGE::"Customer Card",'OnQueryClosePageEvent','');
+        LogVariable(AllowClose,'AllowClose');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Page,21,OnInsertRecordEvent)]
+    LOCAL PROCEDURE OnInsertRec@19(VAR Rec@1000 : Record 18;BelowxRec@1001 : Boolean;VAR xRec@1002 : Record 18;VAR AllowInsert@1003 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Page,PAGE::"Customer Card",'OnInsertRecordEvent','');
+        LogVariable(AllowInsert,'AllowInsert');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Page,21,OnModifyRecordEvent)]
+    LOCAL PROCEDURE OnModifyRec@20(VAR Rec@1000 : Record 18;VAR xRec@1001 : Record 18;VAR AllowModify@1002 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Page,PAGE::"Customer Card",'OnModifyRecordEvent','');
+        LogVariable(AllowModify,'AllowModify');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        LogRecord(Rec.RECORDID,'DatabaseRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Page,21,OnDeleteRecordEvent)]
+    LOCAL PROCEDURE OnDeleteRec@21(VAR Rec@1000 : Record 18;VAR AllowDelete@1001 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Page,PAGE::"Customer Card",'OnDeleteRecordEvent','');
+        LogVariable(AllowDelete,'AllowDelete');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Page,21,OnNewRecordEvent)]
+    LOCAL PROCEDURE OnNewRec@22(VAR Rec@1000 : Record 18;BelowxRec@1001 : Boolean;VAR xRec@1002 : Record 18);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Page,PAGE::"Customer Card",'OnNewRecordEvent','');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Page,21,OnAfterGetRecordEvent)]
+    LOCAL PROCEDURE OnGetRec@2(VAR Rec@1000 : Record 18);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Page,PAGE::"Customer Card",'OnAfterGetRecordEvent','');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Page,21,OnAfterGetCurrRecordEvent)]
+    LOCAL PROCEDURE OnGetCurrRec@5(VAR Rec@1000 : Record 18);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Page,PAGE::"Customer Card",'OnAfterGetCurrRecordEvent','');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Page,21,OnBeforeValidateEvent,Name)]
+    LOCAL PROCEDURE OnBeforeNameValidate@23(VAR Rec@1000 : Record 18;VAR xRec@1001 : Record 18);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Page,PAGE::"Customer Card",'OnBeforeValidateEvent-Name','');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Page,21,OnAfterValidateEvent,Name)]
+    LOCAL PROCEDURE OnAfterNameValidate@1(VAR Rec@1000 : Record 18;VAR xRec@1001 : Record 18);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Page,PAGE::"Customer Card",'OnAfterValidateEvent-Name','');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Page,21,OnBeforeValidateEvent,"Search Name")]
+    LOCAL PROCEDURE OnBeforeSearchNameValidate@3(VAR Rec@1000 : Record 18;VAR xRec@1001 : Record 18);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Page,PAGE::"Customer Card",'OnBeforeValidateEvent-Search Name','');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Page,21,OnAfterValidateEvent,"Search Name")]
+    LOCAL PROCEDURE OnAfterSearchNameValidate@4(VAR Rec@1000 : Record 18;VAR xRec@1001 : Record 18);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Page,PAGE::"Customer Card",'OnAfterValidateEvent-Search Name','');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        EndLog;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

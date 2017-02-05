@@ -1,0 +1,21 @@
+OBJECT Modification "Event Publisher Log Details"(Page 85001)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Event Publisher Log Details"(Page 85001);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

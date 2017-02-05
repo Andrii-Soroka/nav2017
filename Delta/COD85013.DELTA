@@ -1,0 +1,101 @@
+OBJECT Codeunit 85013 Log CustLedgEntries Events
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.11.16;
+    Time=11:07:37;
+    Version List=EventLogging110.0;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      EventingLogMgt@1000 : Codeunit 85000;
+      ObjType@1001 : 'TableData,Table,,Report,,Codeunit,XMLport,MenuSuite,Page,Query,System,FieldNumber';
+
+    [EventSubscriber(Table,21,OnBeforeInsertEvent)]
+    LOCAL PROCEDURE OnBeforeCustLedgEntryInsert@2(VAR Rec@1000 : Record 21;RunTrigger@1001 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::"Cust. Ledger Entry",'OnBeforeCustLedgEntryInsert','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,21,OnAfterInsertEvent)]
+    LOCAL PROCEDURE OnAfterCustLedgEntryInsert@3(VAR Rec@1000 : Record 21;RunTrigger@1001 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::"Cust. Ledger Entry",'OnAfterCustLedgEntryInsert','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,21,OnBeforeModifyEvent)]
+    LOCAL PROCEDURE OnBeforeCustLedgEntryModify@4(VAR Rec@1000 : Record 21;VAR xRec@1001 : Record 21;RunTrigger@1002 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::"Cust. Ledger Entry",'OnBeforeCustLedgEntryModify','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        LogRecord(Rec.RECORDID,'DatabaseRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,21,OnAfterModifyEvent)]
+    LOCAL PROCEDURE OnAfterCustLedgEntryModify@5(VAR Rec@1000 : Record 21;VAR xRec@1001 : Record 21;RunTrigger@1002 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::"Cust. Ledger Entry",'OnAfterCustLedgEntryModify','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        LogRecord(xRec,'xRec');
+        LogRecord(Rec.RECORDID,'DatabaseRec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,21,OnBeforeDeleteEvent)]
+    LOCAL PROCEDURE OnBeforeCustLedgEntryDelete@6(VAR Rec@1000 : Record 21;RunTrigger@1001 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::"Cust. Ledger Entry",'OnBeforeCustLedgEntryDelete','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    [EventSubscriber(Table,21,OnAfterDeleteEvent)]
+    LOCAL PROCEDURE OnAfterCustLedgEntryDelete@7(VAR Rec@1000 : Record 21;RunTrigger@1001 : Boolean);
+    BEGIN
+      WITH EventingLogMgt DO BEGIN
+        StartLog(ObjType::Table,DATABASE::"Cust. Ledger Entry",'OnAfterCustLedgEntryDelete','');
+        LogVariable(Rec.ISTEMPORARY,'IsTemporary');
+        LogVariable(RunTrigger,'RunTrigger');
+        LogRecord(Rec,'Rec');
+        EndLog;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

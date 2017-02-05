@@ -1,0 +1,27 @@
+OBJECT MenuSuite 1090 Dept - Company
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.11.16;
+    Time=16:18:59;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+  }
+  MENUNODES
+  {
+    {                ;[{83FEF2BD-D155-4203-ACAD-FE9AAE4C3033}] ;NextNodeID=[{594684D4-7DB2-4593-A35E-E3CE69828BAA}] }
+    { MenuItem       ;[{594684D4-7DB2-4593-A35E-E3CE69828BAA}] ;Name=Event Publisher Log Entries;
+                                                                CaptionML=ENU=Event Publisher Log Entries;
+                                                                ApplicationArea=;
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=85000;
+                                                                ParentNodeID=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{00000000-0000-0000-0000-000000000000}];
+                                                                DepartmentCategory=Lists }
+  }
+}
+
