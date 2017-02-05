@@ -1,0 +1,66 @@
+OBJECT Codeunit 85049 Copy MyRefNo To CustLedgE #4
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.11.16;
+    Time=09:46:41;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      SingleInstanceRecordStorage@1000 : Codeunit 85003;
+
+    [EventSubscriber(Codeunit,80,OnBeforePostCommitSalesDoc,"",Skip)]
+    LOCAL PROCEDURE OnBeforeSalesPosting@2(VAR SalesHeader@1000 : Record 36;VAR GenJnlPostLine@1001 : Codeunit 12;PreviewMode@1002 : Boolean;ModifyHeader@1003 : Boolean);
+    BEGIN
+      SingleInstanceRecordStorage.Set(SalesHeader);
+    END;
+
+    [EventSubscriber(Table,21,OnBeforeInsertEvent,"",Skip)]
+    LOCAL PROCEDURE OnBeforeCustLedgEntryInsert@4(VAR Rec@1000 : Record 21;RunTrigger@1001 : Boolean);
+    VAR
+      PostingNo@1002 : Code[20];
+    BEGIN
+      EXIT; // Disabled
+      GetNAVTechDaysRefCode(Rec."Document No.",Rec."NAVTechDays 2016 Reference No.");
+    END;
+
+    [EventSubscriber(Table,379,OnBeforeInsertEvent,"",Skip)]
+    LOCAL PROCEDURE OnBeforeDetailedCustLedgEntryInsert@5(VAR Rec@1000 : Record 379;RunTrigger@1001 : Boolean);
+    VAR
+      PostingNo@1002 : Code[20];
+    BEGIN
+      EXIT; // Disabled
+      GetNAVTechDaysRefCode(Rec."Document No.",Rec."NAVTechDays 2016 Reference No.");
+    END;
+
+    LOCAL PROCEDURE GetNAVTechDaysRefCode@8(ForDocumentNo@1000 : Code[20];VAR NAVTechDaysRefCode@1001 : Code[20]);
+    VAR
+      SalesHeader@1002 : Record 36;
+    BEGIN
+      GetSalesHeader(SalesHeader);
+      IF SalesHeader."Posting No." = ForDocumentNo THEN
+        NAVTechDaysRefCode := SalesHeader."NAVTechDays 2016 Reference No.";
+    END;
+
+    LOCAL PROCEDURE GetSalesHeader@7(VAR SalesHeader@1000 : Record 36);
+    VAR
+      RecRef@1001 : RecordRef;
+    BEGIN
+      IF SingleInstanceRecordStorage.GetRecRef(RecRef) THEN
+        RecRef.SETTABLE(SalesHeader);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

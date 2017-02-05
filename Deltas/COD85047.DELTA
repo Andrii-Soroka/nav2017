@@ -1,0 +1,71 @@
+OBJECT Codeunit 85047 Copy MyRefNo To CustLedgE #3
+{
+  OBJECT-PROPERTIES
+  {
+    Date=08.11.16;
+    Time=17:40:10;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      SingleInstanceDictionary@1000 : Codeunit 85002;
+
+    [EventSubscriber(Codeunit,80,OnBeforePostCommitSalesDoc,"",Skip)]
+    LOCAL PROCEDURE OnBeforeSalesPosting@2(VAR SalesHeader@1000 : Record 36;VAR GenJnlPostLine@1001 : Codeunit 12;PreviewMode@1002 : Boolean;ModifyHeader@1003 : Boolean);
+    BEGIN
+      SingleInstanceDictionary.AddValue(GetPostingNoVariableName,SalesHeader."Posting No.");
+      SingleInstanceDictionary.AddValue(GetMyRefVariableName,SalesHeader."NAVTechDays 2016 Reference No.");
+    END;
+
+    [EventSubscriber(Table,21,OnBeforeInsertEvent,"",Skip)]
+    LOCAL PROCEDURE OnBeforeCustLedgEntryInsert@4(VAR Rec@1000 : Record 21;RunTrigger@1001 : Boolean);
+    VAR
+      PostingNo@1002 : Code[20];
+    BEGIN
+      EXIT; // Disabled
+      IF SingleInstanceDictionary.GetCodeValue(GetPostingNoVariableName,PostingNo) THEN
+        IF Rec."Document No." = PostingNo THEN
+          SingleInstanceDictionary.GetCodeValue(GetMyRefVariableName,Rec."NAVTechDays 2016 Reference No.");
+    END;
+
+    [EventSubscriber(Table,379,OnBeforeInsertEvent,"",Skip)]
+    LOCAL PROCEDURE OnBeforeDetailedCustLedgEntryInsert@5(VAR Rec@1000 : Record 379;RunTrigger@1001 : Boolean);
+    VAR
+      PostingNo@1002 : Code[20];
+    BEGIN
+      EXIT; // Disabled
+      IF SingleInstanceDictionary.GetCodeValue(GetPostingNoVariableName,PostingNo) THEN
+        IF Rec."Document No." = PostingNo THEN
+          SingleInstanceDictionary.GetCodeValue(GetMyRefVariableName,Rec."NAVTechDays 2016 Reference No.");
+    END;
+
+    [EventSubscriber(Codeunit,80,OnAfterPostSalesDoc,"",Skip)]
+    LOCAL PROCEDURE OnAfterSalesPosting@1(VAR SalesHeader@1000 : Record 36;VAR GenJnlPostLine@1001 : Codeunit 12;SalesShptHdrNo@1002 : Code[20];RetRcpHdrNo@1003 : Code[20];SalesInvHdrNo@1004 : Code[20];SalesCrMemoHdrNo@1005 : Code[20]);
+    BEGIN
+      SingleInstanceDictionary.ClearValue(GetPostingNoVariableName);
+      SingleInstanceDictionary.ClearValue(GetMyRefVariableName);
+    END;
+
+    LOCAL PROCEDURE GetPostingNoVariableName@3() : Text;
+    BEGIN
+      EXIT('SalesPostingNo');
+    END;
+
+    LOCAL PROCEDURE GetMyRefVariableName@7() : Text;
+    BEGIN
+      EXIT('NAVTechDaysRefNo');
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

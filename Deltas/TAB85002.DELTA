@@ -1,0 +1,41 @@
+OBJECT Table 85002 Resp. Center Printer Selection
+{
+  OBJECT-PROPERTIES
+  {
+    Date=26.10.16;
+    Time=14:48:31;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+  }
+  FIELDS
+  {
+    { 1   ;   ;Responsibility Center;Code10       ;TableRelation="Responsibility Center";
+                                                   CaptionML=ENU=Responsibility Center }
+    { 2   ;   ;Report ID           ;Integer       ;TableRelation=AllObjWithCaption."Object ID" WHERE (Object Type=CONST(Report));
+                                                   CaptionML=ENU=Report ID }
+    { 3   ;   ;Printer Name        ;Text250       ;TableRelation=Printer;
+                                                   CaptionML=ENU=Printer Name }
+    { 4   ;   ;Report Caption      ;Text250       ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(AllObjWithCaption."Object Caption" WHERE (Object Type=CONST(Report),
+                                                                                                                Object ID=FIELD(Report ID)));
+                                                   CaptionML=ENU=Report Caption;
+                                                   Editable=No }
+  }
+  KEYS
+  {
+    {    ;Responsibility Center,Report ID         ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

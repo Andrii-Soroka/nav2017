@@ -1,0 +1,42 @@
+OBJECT Page 85021 Grouping Result
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.11.16;
+    Time=18:19:12;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    SourceTable=Table85050;
+    PageType=List;
+  }
+  CONTROLS
+  {
+    { 1   ;0   ;Container ;
+                ContainerType=ContentArea }
+
+    { 2   ;1   ;Group     ;
+                Name=Group;
+                GroupType=Repeater }
+
+    { 3   ;2   ;Field     ;
+                SourceExpr=Code }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr=Description }
+
+    { 21  ;2   ;Field     ;
+                SourceExpr="No. of Entries" }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

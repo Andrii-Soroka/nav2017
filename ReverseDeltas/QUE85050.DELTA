@@ -1,0 +1,21 @@
+OBJECT Modification "Customer Grouping Test"(Query 85050)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Customer Grouping Test"(Query 85050);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

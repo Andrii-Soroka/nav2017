@@ -1,0 +1,80 @@
+OBJECT Page 85030 POS Demo
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.11.16;
+    Time=19:01:21;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    LinksAllowed=No;
+    SourceTable=Table85030;
+    DelayedInsert=Yes;
+    PageType=Worksheet;
+    SourceTableTemporary=Yes;
+    AutoSplitKey=Yes;
+    ShowFilter=No;
+    OnOpenPage=BEGIN
+                 CurrPage.POSItems.PAGE.Set(Rec);
+                 CurrPage.POSResources.PAGE.Set(Rec);
+               END;
+
+    OnQueryClosePage=BEGIN
+                       IF NOT ISEMPTY THEN
+                         EXIT(CONFIRM(POSNotEmpty,FALSE));
+                     END;
+
+  }
+  CONTROLS
+  {
+    { 1   ;0   ;Container ;
+                ContainerType=ContentArea }
+
+    { 2   ;1   ;Group     ;
+                Name=Group;
+                GroupType=Repeater }
+
+    { 3   ;2   ;Field     ;
+                SourceExpr=Type }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr="No." }
+
+    { 5   ;2   ;Field     ;
+                SourceExpr=Description }
+
+    { 6   ;2   ;Field     ;
+                SourceExpr=Quantity }
+
+    { 7   ;2   ;Field     ;
+                SourceExpr="Unit Price" }
+
+    { 8   ;2   ;Field     ;
+                SourceExpr="Line Amount" }
+
+    { 9   ;    ;Container ;
+                ContainerType=FactBoxArea }
+
+    { 10  ;1   ;Part      ;
+                Name=POSItems;
+                PagePartID=Page85032;
+                PartType=Page }
+
+    { 11  ;1   ;Part      ;
+                Name=POSResources;
+                PagePartID=Page85031;
+                PartType=Page }
+
+  }
+  CODE
+  {
+    VAR
+      POSNotEmpty@1000 : TextConst 'ENU=POS is not empty, closing will remove all lines.  Continue?';
+
+    BEGIN
+    END.
+  }
+}
+

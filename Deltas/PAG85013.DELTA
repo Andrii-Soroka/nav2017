@@ -1,0 +1,66 @@
+OBJECT Page 85013 My Customer Links
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.11.16;
+    Time=14:45:20;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    SourceTable=Table2000000068;
+    PageType=ListPart;
+    OnOpenPage=BEGIN
+                 OnCloneTempRecordLink(TempRecordLink);
+               END;
+
+    OnFindRecord=VAR
+                   Found@1000 : Boolean;
+                 BEGIN
+                   TempRecordLink := Rec;
+                   Found := TempRecordLink.FIND(Which);
+                   Rec := TempRecordLink;
+                   EXIT(Found);
+                 END;
+
+    OnNextRecord=VAR
+                   NextSteps@1000 : Integer;
+                 BEGIN
+                   TempRecordLink := Rec;
+                   NextSteps := TempRecordLink.NEXT(Steps);
+                   Rec := TempRecordLink;
+                   EXIT(NextSteps);
+                 END;
+
+  }
+  CONTROLS
+  {
+    { 1   ;0   ;Container ;
+                ContainerType=ContentArea }
+
+    { 2   ;1   ;Group     ;
+                Name=Group;
+                GroupType=Repeater }
+
+    { 3   ;2   ;Field     ;
+                SourceExpr=Description;
+                ShowCaption=No }
+
+  }
+  CODE
+  {
+    VAR
+      TempRecordLink@1000 : TEMPORARY Record 2000000068;
+
+    [Integration]
+    LOCAL PROCEDURE OnCloneTempRecordLink@1(VAR TempRecordLink@1000 : TEMPORARY Record 2000000068);
+    BEGIN
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

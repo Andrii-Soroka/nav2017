@@ -1,0 +1,21 @@
+OBJECT Modification "Create Customers"(Codeunit 85051)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Create Customers"(Codeunit 85051);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

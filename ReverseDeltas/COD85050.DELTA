@@ -1,0 +1,21 @@
+OBJECT Modification "Grouping Test"(Codeunit 85050)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Grouping Test"(Codeunit 85050);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,34 @@
+OBJECT Modification "Sales Invoice Header"(Table 112)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=04.11.16;
+    Time=14:26:08;
+    Modified=Yes;
+    Version List=NAVW110.0,NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    Target="Sales Invoice Header"(Table 112);
+  }
+  CHANGES
+  {
+    { Insertion         ;InsertAfter="Get Shipment Used"(Field 7200);
+                         ChangedElements=FieldCollection
+                         {
+                           { 85050;  ;NAVTechDays 2016 Reference No.;Code20 }
+                         }
+                          }
+    { PropertyModification;
+                         Property=Version List;
+                         OriginalValue=NAVW110.0;
+                         ModifiedValue=NAVW110.0,NAVTechDays2016 }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

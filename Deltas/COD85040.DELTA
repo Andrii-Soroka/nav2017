@@ -1,0 +1,36 @@
+OBJECT Codeunit 85040 User Profile Subscriber
+{
+  OBJECT-PROPERTIES
+  {
+    Date=26.10.16;
+    Time=13:30:51;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+
+    [EventSubscriber(Codeunit,1,OnAfterGetDefaultRoleCenter,"",Skip,Skip)]
+    LOCAL PROCEDURE GetClientBasedDefaultRoleCenter@10000205(VAR DefaultRoleCenterID@10000200 : Integer);
+    VAR
+      UserClientTypeProfileSelec@10000202 : Record 85001;
+      Profile@10000201 : Record 2000000072;
+    BEGIN
+      DefaultRoleCenterID := 9022;
+      WITH UserClientTypeProfileSelec DO
+        IF  GET(USERSECURITYID) THEN
+          IF Profile.GET(GetProfileIdByClientType) THEN
+            DefaultRoleCenterID := Profile."Role Center ID";
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

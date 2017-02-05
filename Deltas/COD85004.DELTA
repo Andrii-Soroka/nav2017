@@ -1,0 +1,59 @@
+OBJECT Codeunit 85004 Single Intance Temp Link Mgt.
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.11.16;
+    Time=11:11:37;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    SingleInstance=Yes;
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      GlobalTempRecordLink@1000 : TEMPORARY Record 2000000068;
+      RecordLink@1001 : Record 2000000068;
+
+    [EventSubscriber(Page,85013,OnCloneTempRecordLink,"",Skip)]
+    PROCEDURE InitializeTempRecordLinkOnOpenPage@1(VAR TempRecordLink@1000 : TEMPORARY Record 2000000068);
+    BEGIN
+      GlobalTempRecordLink.RESET;
+      GlobalTempRecordLink.DELETEALL;
+      TempRecordLink.COPY(GlobalTempRecordLink,TRUE);
+    END;
+
+    [EventSubscriber(Page,85011,OnAfterGetCurrRecordEvent)]
+    LOCAL PROCEDURE OnCustomerCardGetCurrRec@4(VAR Rec@1000 : Record 18);
+    BEGIN
+      SaveCardRecordId(Rec.RECORDID);
+    END;
+
+    [EventSubscriber(Page,26,OnAfterGetCurrRecordEvent)]
+    LOCAL PROCEDURE OnVendorCardGetCurrRec@2(VAR Rec@1000 : Record 23);
+    BEGIN
+      SaveCardRecordId(Rec.RECORDID);
+    END;
+
+    LOCAL PROCEDURE SaveCardRecordId@3(RecordIdentifier@1000 : RecordID);
+    BEGIN
+      GlobalTempRecordLink.DELETEALL;
+      WITH RecordLink DO BEGIN
+        SETRANGE("Secondary Record ID",RecordIdentifier);
+        IF FINDSET THEN REPEAT
+          GlobalTempRecordLink := RecordLink;
+          GlobalTempRecordLink.INSERT;
+        UNTIL NEXT = 0;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,46 @@
+OBJECT Codeunit 85051 Create Customers
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.11.16;
+    Time=10:09:46;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+            CreateCustomers;
+          END;
+
+  }
+  CODE
+  {
+
+    LOCAL PROCEDURE CreateCustomers@1();
+    VAR
+      Cust@1000 : Record 18;
+      ExistingCust@1001 : Record 18;
+      Loop@1002 : Integer;
+    BEGIN
+      WITH Cust DO BEGIN
+        GET('10000');
+        FOR Loop := 1 TO 10000 DO BEGIN
+          "No." := INCSTR("No.");
+          IF Loop MOD 3 = 0 THEN
+            "Customer Posting Group" := 'DOMESTIC'
+          ELSE IF Loop MOD 2 = 0 THEN
+            "Customer Posting Group" := 'EU'
+          ELSE
+            "Customer Posting Group" := 'FOREIGN';
+          IF NOT ExistingCust.GET("No.") THEN
+            INSERT;
+        END;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

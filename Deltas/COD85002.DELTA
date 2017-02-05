@@ -1,0 +1,95 @@
+OBJECT Codeunit 85002 Single Instance Dictionary
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.11.16;
+    Time=09:42:59;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    SingleInstance=Yes;
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Dictionary@1000 : DotNet "'mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'.System.Collections.Generic.Dictionary`2";
+
+    LOCAL PROCEDURE Initialize@2();
+    BEGIN
+      IF ISNULL(Dictionary) THEN
+        Dictionary := Dictionary.Dictionary;
+    END;
+
+    PROCEDURE AddValue@3(VariableName@1000 : Text;VariableValue@1001 : Variant);
+    BEGIN
+      Initialize;
+      ClearValue(VariableName);
+      Dictionary.Add(VariableName,VariableValue);
+    END;
+
+    [TryFunction]
+    PROCEDURE TryGetValue@5(VariableName@1001 : Text;VAR VariableValue@1000 : Variant);
+    BEGIN
+      Initialize;
+      IF Dictionary.ContainsKey(VariableName) THEN
+        Dictionary.TryGetValue(VariableName,VariableValue);
+    END;
+
+    PROCEDURE ClearValue@8(VariableName@1000 : Text);
+    BEGIN
+      Initialize;
+      IF Dictionary.ContainsKey(VariableName) THEN
+        Dictionary.Remove(VariableName);
+    END;
+
+    PROCEDURE GetAndClearValue@9(VariableName@1001 : Text;VAR VariableValue@1000 : Variant) : Boolean;
+    BEGIN
+      Initialize;
+      IF TryGetValue(VariableName,VariableValue) THEN BEGIN
+        ClearValue(VariableName);
+        EXIT(TRUE);
+      END;
+    END;
+
+    PROCEDURE GetTextValue@1(VariableName@1001 : Text;VAR VariableTextValue@1000 : Text) : Boolean;
+    VAR
+      VariableValue@1002 : Variant;
+    BEGIN
+      IF TryGetValue(VariableName,VariableValue) THEN
+        EXIT(EVALUATE(VariableTextValue,VariableValue));
+    END;
+
+    PROCEDURE GetCodeValue@4(VariableName@1001 : Text;VAR VariableCodeValue@1000 : Code[10]) : Boolean;
+    VAR
+      VariableValue@1002 : Variant;
+    BEGIN
+      IF TryGetValue(VariableName,VariableValue) THEN
+        EXIT(EVALUATE(VariableCodeValue,VariableValue));
+    END;
+
+    PROCEDURE GetIntegerValue@6(VariableName@1001 : Text;VAR VariableIntegerValue@1000 : Integer) : Boolean;
+    VAR
+      VariableValue@1002 : Variant;
+    BEGIN
+      IF TryGetValue(VariableName,VariableValue) THEN
+        EXIT(EVALUATE(VariableIntegerValue,VariableValue));
+    END;
+
+    PROCEDURE GetDecimalValue@7(VariableName@1001 : Text;VAR VariableDecimalValue@1000 : Decimal) : Boolean;
+    VAR
+      VariableValue@1002 : Variant;
+    BEGIN
+      IF TryGetValue(VariableName,VariableValue) THEN
+        EXIT(EVALUATE(VariableDecimalValue,VariableValue));
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

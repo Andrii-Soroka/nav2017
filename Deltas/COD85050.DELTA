@@ -1,0 +1,165 @@
+OBJECT Codeunit 85050 Grouping Test
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.11.16;
+    Time=11:20:45;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    OnRun=VAR
+            StartDateTime@1000 : DateTime;
+            Loop@1001 : Integer;
+          BEGIN
+            FindNextEntryNo;
+            FOR Loop := 1 TO 5 DO BEGIN
+              StartDateTime := CURRENTDATETIME;
+              CustomerQueryGroupTest;
+              InsertResult('Query Test',CURRENTDATETIME - StartDateTime);
+            END;
+            FOR Loop := 1 TO 5 DO BEGIN
+              StartDateTime := CURRENTDATETIME;
+              CustomerTempGroupingTest;
+              InsertResult('Temporary Test',CURRENTDATETIME - StartDateTime);
+            END;
+            FOR Loop := 1 TO 5 DO BEGIN
+              StartDateTime := CURRENTDATETIME;
+              CustomerGroupingSkipTest;
+              InsertResult('Skip & Count Test',CURRENTDATETIME - StartDateTime);
+            END;
+            FOR Loop := 1 TO 5 DO BEGIN
+              StartDateTime := CURRENTDATETIME;
+              CustomerGroupingTest;
+              InsertResult('Legacy Test',CURRENTDATETIME - StartDateTime);
+            END;
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      NextEntryNo@1000 : Integer;
+
+    LOCAL PROCEDURE FindNextEntryNo@4();
+    VAR
+      TestResults@1000 : Record 85051;
+    BEGIN
+      WITH TestResults DO
+        IF FINDLAST THEN
+          NextEntryNo := "Entry No." + 1
+        ELSE
+          NextEntryNo := 1;
+    END;
+
+    LOCAL PROCEDURE InsertResult@3(TestName@1000 : Text;TestDuration@1001 : Duration);
+    VAR
+      TestResults@1002 : Record 85051;
+    BEGIN
+      WITH TestResults DO BEGIN
+        INIT;
+        "Entry No." := NextEntryNo;
+        "Test Name" := TestName;
+        "Test Duration" := TestDuration;
+        INSERT;
+        COMMIT;
+        NextEntryNo += 1;
+      END;
+    END;
+
+    LOCAL PROCEDURE CustomerGroupingTest@1();
+    VAR
+      Customer@1000 : Record 18;
+      Grouping@1001 : Record 85050;
+    BEGIN
+      Grouping.DELETEALL;
+      WITH Customer DO BEGIN
+        FINDSET;
+        REPEAT
+          IF NOT Grouping.GET("Customer Posting Group") THEN BEGIN
+            Grouping.INIT;
+            Grouping.Code := "Customer Posting Group";
+            Grouping.Description := FIELDCAPTION("Customer Posting Group");
+            Grouping.INSERT;
+          END;
+          Grouping."No. of Entries" += 1;
+          Grouping.MODIFY;
+        UNTIL NEXT = 0;
+      END;
+    END;
+
+    LOCAL PROCEDURE CustomerTempGroupingTest@2();
+    VAR
+      Customer@1000 : Record 18;
+      Grouping@1001 : Record 85050;
+      TempGrouping@1002 : TEMPORARY Record 85050;
+    BEGIN
+      Grouping.DELETEALL;
+      WITH Customer DO BEGIN
+        FINDSET;
+        REPEAT
+          IF NOT TempGrouping.GET("Customer Posting Group") THEN BEGIN
+            TempGrouping.INIT;
+            TempGrouping.Code := "Customer Posting Group";
+            TempGrouping.Description := FIELDCAPTION("Customer Posting Group");
+            TempGrouping.INSERT;
+          END;
+          TempGrouping."No. of Entries" += 1;
+          TempGrouping.MODIFY;
+        UNTIL NEXT = 0;
+      END;
+      IF TempGrouping.FIND('-') THEN
+        REPEAT
+          Grouping := TempGrouping;
+          Grouping.INSERT;
+        UNTIL TempGrouping.NEXT = 0;
+    END;
+
+    LOCAL PROCEDURE CustomerQueryGroupTest@6();
+    VAR
+      Customer@1002 : Record 18;
+      Grouping@1000 : Record 85050;
+      CustomerGroupingTest@1001 : Query 85050;
+    BEGIN
+      Grouping.DELETEALL;
+      WITH CustomerGroupingTest DO BEGIN
+        OPEN;
+        WHILE READ DO BEGIN
+          Grouping.INIT;
+          Grouping.Code := Customer_Posting_Group;
+          Grouping.Description := Customer.FIELDCAPTION("Customer Posting Group");
+          Grouping."No. of Entries" := Count_;
+          Grouping.INSERT;
+        END;
+        CLOSE;
+      END;
+    END;
+
+    LOCAL PROCEDURE CustomerGroupingSkipTest@8();
+    VAR
+      Customer@1000 : Record 18;
+      Grouping@1001 : Record 85050;
+    BEGIN
+      Grouping.DELETEALL;
+      WITH Customer DO BEGIN
+        SETCURRENTKEY("Customer Posting Group");
+        FINDFIRST;
+        REPEAT
+          SETRANGE("Customer Posting Group","Customer Posting Group");
+          Grouping.INIT;
+          Grouping.Code := "Customer Posting Group";
+          Grouping.Description := FIELDCAPTION("Customer Posting Group");
+          Grouping."No. of Entries" += COUNT;
+          Grouping.INSERT;
+          FINDLAST;
+          SETRANGE("Customer Posting Group");
+        UNTIL NEXT = 0;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

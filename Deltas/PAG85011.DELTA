@@ -1,0 +1,58 @@
+OBJECT Page 85011 My Customer Card
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.11.16;
+    Time=14:46:39;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    SourceTable=Table18;
+    PageType=Card;
+    RefreshOnActivate=Yes;
+  }
+  CONTROLS
+  {
+    { 1   ;0   ;Container ;
+                ContainerType=ContentArea }
+
+    { 2   ;1   ;Group     ;
+                Name=General;
+                GroupType=Group }
+
+    { 3   ;2   ;Field     ;
+                SourceExpr="No." }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr=Name }
+
+    { 5   ;2   ;Field     ;
+                SourceExpr="Search Name" }
+
+    { 6   ;0   ;Container ;
+                ContainerType=FactBoxArea }
+
+    { 7   ;1   ;Part      ;
+                SubPageLink=Customer No.=FIELD(No.);
+                PagePartID=Page85012;
+                Visible=FALSE;
+                PartType=Page }
+
+    { 8   ;1   ;Part      ;
+                SubPageView=SORTING(Secondary Record ID);
+                SubPageLink=Type=CONST(Link),
+                            User ID=FIELD(No.);
+                PagePartID=Page85013;
+                PartType=Page }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

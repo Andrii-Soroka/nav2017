@@ -1,0 +1,37 @@
+OBJECT Modification "Detailed Cust. Ledg. Entries"(Page 573)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=04.11.16;
+    Time=14:55:48;
+    Modified=Yes;
+    Version List=NAVW110.0,NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    Target="Detailed Cust. Ledg. Entries"(Page 573);
+  }
+  CHANGES
+  {
+    { Insertion         ;InsertAfter=Control 18;
+                         ChangedElements=ControlCollection
+                         {
+                           { 3   ;2   ;Field     ;
+                                       ApplicationArea=#Basic,#Suite;
+                                       SourceExpr="NAVTechDays 2016 Reference No." }
+
+                         }
+                          }
+    { PropertyModification;
+                         Property=Version List;
+                         OriginalValue=NAVW110.0;
+                         ModifiedValue=NAVW110.0,NAVTechDays2016 }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

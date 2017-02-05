@@ -1,0 +1,21 @@
+OBJECT Modification "Single Intance Temp Link Mgt."(Codeunit 85004)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Single Intance Temp Link Mgt."(Codeunit 85004);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

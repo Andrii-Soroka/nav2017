@@ -1,0 +1,83 @@
+OBJECT Page 85002 User Profile Selection
+{
+  OBJECT-PROPERTIES
+  {
+    Date=26.10.16;
+    Time=15:15:43;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    SourceTable=Table85001;
+    PageType=List;
+    OnOpenPage=BEGIN
+                 ShowEnableProfileByClientType := CanSetProfileByClientTypeSupport AND NOT GetProfileByClientTypeSupport;
+               END;
+
+    ActionList=ACTIONS
+    {
+      { 11      ;    ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 10      ;1   ;Action    ;
+                      Name=EnableProfileByClientTypeSupport;
+                      Ellipsis=Yes;
+                      CaptionML=[ENU=Enable Profile By Client Type Support;
+                                 ISL=Virkja stu–ning vi– forstillingu samkvëmt bi–larategund];
+                      ToolTipML=[ENU=This will remove the default flag from your profile and enable the profile selection based on the client type.  This selection will also be available to the user in his settings.  To remove this support stamp a profile as a default profile.;
+                                 ISL=Ëessi a–ger– fjarlëgir sj†lfgefi– flagg af forstillingum og virkjar mîguleika † a– velja forstillingar byggt † bi–larategund.  Vali– ver–ur einnig sÏnilegt ° stillingum notanda.  Ef forstilling er merkt sem sj†lfgefin Á† skiptir kerfi– aftur ° fyrri virkni];
+                      Promoted=Yes;
+                      Visible=ShowEnableProfileByClientType;
+                      PromotedIsBig=Yes;
+                      Image=UserInterface;
+                      PromotedCategory=Process;
+                      OnAction=BEGIN
+                                 SetProfileByClientTypeSupport;
+                                 ShowEnableProfileByClientType := CanSetProfileByClientTypeSupport AND NOT GetProfileByClientTypeSupport;
+                               END;
+                                }
+    }
+  }
+  CONTROLS
+  {
+    { 1   ;0   ;Container ;
+                ContainerType=ContentArea }
+
+    { 2   ;1   ;Group     ;
+                Name=Group;
+                GroupType=Repeater }
+
+    { 3   ;2   ;Field     ;
+                SourceExpr="User ID";
+                OnAssistEdit=BEGIN
+                               AssistEdit;
+                               CurrPage.UPDATE;
+                             END;
+                              }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr="Windows Client Profile ID" }
+
+    { 5   ;2   ;Field     ;
+                SourceExpr="Web Client Profile ID" }
+
+    { 6   ;2   ;Field     ;
+                SourceExpr="Touch Client Profile ID" }
+
+    { 7   ;2   ;Field     ;
+                SourceExpr="Phone Client Profile ID" }
+
+    { 8   ;2   ;Field     ;
+                SourceExpr="Desktop Client Profile ID" }
+
+  }
+  CODE
+  {
+    VAR
+      ShowEnableProfileByClientType@1000 : Boolean;
+
+    BEGIN
+    END.
+  }
+}
+

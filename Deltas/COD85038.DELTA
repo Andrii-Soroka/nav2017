@@ -1,0 +1,70 @@
+OBJECT Codeunit 85038 Add Secondary Record Link
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.11.16;
+    Time=09:47:00;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+
+    [EventSubscriber(Table,2000000068,OnBeforeInsertEvent,"",Skip)]
+    LOCAL PROCEDURE OnRecordLinkInsert@1(VAR Rec@1000 : Record 2000000068;RunTrigger@1001 : Boolean);
+    VAR
+      RecRef@1002 : RecordRef;
+      SecondaryRecordLinkRef@1003 : RecordRef;
+    BEGIN
+      IF NOT RecRef.GET(Rec."Record ID") THEN EXIT;
+      FindSecondaryRecordLinkID(RecRef,SecondaryRecordLinkRef);
+      Rec."Secondary Record ID" := SecondaryRecordLinkRef.RECORDID;
+    END;
+
+    LOCAL PROCEDURE FindSecondaryRecordLinkID@2(RecRef@1002 : RecordRef;VAR SecondaryRecordLinkRef@1001 : RecordRef);
+    BEGIN
+      CASE RecRef.NUMBER OF
+        DATABASE::"Sales Header",
+        DATABASE::"Sales Invoice Header",
+        DATABASE::"Sales Shipment Header",
+        DATABASE::"Sales Cr.Memo Header":
+          AddCustomer(RecRef,2,SecondaryRecordLinkRef);
+        DATABASE::"Purchase Header",
+        DATABASE::"Purch. Rcpt. Header",
+        DATABASE::"Purch. Inv. Header",
+        DATABASE::"Purch. Cr. Memo Hdr.":
+          AddVendor(RecRef,2,SecondaryRecordLinkRef);
+      END;
+    END;
+
+    LOCAL PROCEDURE AddCustomer@3(RecRef@1002 : RecordRef;CustomerFieldNo@1000 : Integer;VAR SecondaryRecordLinkRef@1001 : RecordRef);
+    VAR
+      FieldRef@1004 : FieldRef;
+      Customer@1003 : Record 18;
+    BEGIN
+      FieldRef := RecRef.FIELD(CustomerFieldNo);
+      Customer.GET(FieldRef.VALUE);
+      SecondaryRecordLinkRef.GETTABLE(Customer);
+    END;
+
+    LOCAL PROCEDURE AddVendor@4(RecRef@1002 : RecordRef;VendorFieldNo@1000 : Integer;VAR SecondaryRecordLinkRef@1001 : RecordRef);
+    VAR
+      FieldRef@1004 : FieldRef;
+      Vendor@1003 : Record 23;
+    BEGIN
+      FieldRef := RecRef.FIELD(VendorFieldNo);
+      Vendor.GET(FieldRef.VALUE);
+      SecondaryRecordLinkRef.GETTABLE(Vendor);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,7 +1,6 @@
-# nav2017
-NAV 2017 Source Code Management
-
-Base objects stored locally in Work Folder as "baseObjects"
+# NAVTechDays2016_Demos
+NAV 2017 Demos shown on my Migrate to Events session
+Event Logging demo is in EventLogging branch
 
 Gunnar Thor Gestsson
 http://www.dynamics.is

@@ -1,0 +1,21 @@
+OBJECT Modification "Grouping Test Results"(Page 85020)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Grouping Test Results"(Page 85020);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

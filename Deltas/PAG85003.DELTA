@@ -1,0 +1,44 @@
+OBJECT Page 85003 Resp. Center Printer Selection
+{
+  OBJECT-PROPERTIES
+  {
+    Date=26.10.16;
+    Time=14:49:27;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    SourceTable=Table85002;
+    PageType=List;
+  }
+  CONTROLS
+  {
+    { 1   ;0   ;Container ;
+                ContainerType=ContentArea }
+
+    { 2   ;1   ;Group     ;
+                Name=Group;
+                GroupType=Repeater }
+
+    { 3   ;2   ;Field     ;
+                SourceExpr="Responsibility Center" }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr="Report ID" }
+
+    { 5   ;2   ;Field     ;
+                SourceExpr="Printer Name" }
+
+    { 6   ;2   ;Field     ;
+                SourceExpr="Report Caption" }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

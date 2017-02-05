@@ -1,0 +1,84 @@
+OBJECT Codeunit 85043 Resp. Center Subscribers
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.11.16;
+    Time=17:12:49;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      UserSetupMgt@1000 : Codeunit 5700;
+
+    [EventSubscriber(Codeunit,1,OnAfterFindPrinter)]
+    LOCAL PROCEDURE OnFindPrinter@1(ReportID@1000 : Integer;VAR PrinterName@1001 : Text[250]);
+    VAR
+      UserRespCenterCode@1002 : Code[10];
+    BEGIN
+      UserRespCenterCode := UserSetupMgt.GetSalesFilter;
+      CheckRespCenterPrinterSelection(UserRespCenterCode,ReportID,PrinterName);
+    END;
+
+    [EventSubscriber(Page,22,OnOpenPageEvent)]
+    LOCAL PROCEDURE OnOpenCustomerList@2(VAR Rec@1000 : Record 18);
+    VAR
+      UserRespCenterCode@1001 : Code[10];
+    BEGIN
+      UserRespCenterCode := UserSetupMgt.GetSalesFilter;
+      FilterCustByRespCenterCode(Rec,UserRespCenterCode);
+    END;
+
+    [EventSubscriber(Page,21,OnOpenPageEvent)]
+    LOCAL PROCEDURE OnOpenCustomerCard@3(VAR Rec@1000 : Record 18);
+    VAR
+      UserRespCenterCode@1001 : Code[10];
+    BEGIN
+      UserRespCenterCode := UserSetupMgt.GetSalesFilter;
+      FilterCustByRespCenterCode(Rec,UserRespCenterCode);
+    END;
+
+    [EventSubscriber(Page,21,OnNewRecordEvent,"",Skip)]
+    LOCAL PROCEDURE OnNewCustomerCard@6(VAR Rec@1000 : Record 18;BelowxRec@1001 : Boolean;VAR xRec@1002 : Record 18);
+    VAR
+      UserRespCenterCode@1003 : Code[10];
+    BEGIN
+      UserRespCenterCode := UserSetupMgt.GetSalesFilter;
+      IF (Rec."Responsibility Center" = '') AND (UserRespCenterCode <> '') THEN
+        Rec."Responsibility Center" := UserRespCenterCode;
+    END;
+
+    LOCAL PROCEDURE CheckRespCenterPrinterSelection@5(UserRespCenterCode@1002 : Code[10];ReportID@1001 : Integer;VAR PrinterName@1000 : Text[250]);
+    VAR
+      PrinterSelection@1003 : Record 78;
+      RespCenterPrinterSelection@1004 : Record 85002;
+    BEGIN
+      IF PrinterSelection.GET(USERID,ReportID) THEN EXIT;
+      IF RespCenterPrinterSelection.GET(UserRespCenterCode,ReportID) THEN
+        PrinterName := RespCenterPrinterSelection."Printer Name";
+    END;
+
+    LOCAL PROCEDURE FilterCustByRespCenterCode@4(VAR Cust@1000 : Record 18;RespCenterCode@1001 : Code[10]);
+    BEGIN
+      WITH Cust DO BEGIN
+        FILTERGROUP(2);
+        IF RespCenterCode = '' THEN
+          SETRANGE("Responsibility Center")
+        ELSE
+          SETRANGE("Responsibility Center",RespCenterCode);
+        FILTERGROUP(0);
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

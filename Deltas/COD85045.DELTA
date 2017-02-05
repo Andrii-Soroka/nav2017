@@ -1,0 +1,47 @@
+OBJECT Codeunit 85045 Copy MyRefNo To CustLedgE #1
+{
+  OBJECT-PROPERTIES
+  {
+    Date=08.11.16;
+    Time=16:57:46;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+
+    [EventSubscriber(Codeunit,80,OnAfterPostSalesDoc,"",Skip)]
+    LOCAL PROCEDURE CopyAfterPosting@2(VAR SalesHeader@1000 : Record 36;VAR GenJnlPostLine@1001 : Codeunit 12;SalesShptHdrNo@1002 : Code[20];RetRcpHdrNo@1003 : Code[20];SalesInvHdrNo@1004 : Code[20];SalesCrMemoHdrNo@1005 : Code[20]);
+    VAR
+      SalesInvHeader@1007 : Record 112;
+      SalesCrMemoHeader@1008 : Record 114;
+      CustLedgerEntry@1006 : Record 21;
+    BEGIN
+      EXIT; // Disabled
+      IF SalesInvHdrNo <> '' THEN BEGIN
+        SalesInvHeader.GET(SalesInvHdrNo);
+        CustLedgerEntry.GET(SalesInvHeader."Cust. Ledger Entry No.");
+      END
+      ELSE
+      IF SalesCrMemoHdrNo <> '' THEN BEGIN
+        SalesCrMemoHeader.GET(SalesCrMemoHdrNo);
+        CustLedgerEntry.GET(SalesCrMemoHeader."Cust. Ledger Entry No.");
+      END
+      ELSE
+      EXIT;
+
+      CustLedgerEntry."NAVTechDays 2016 Reference No." := SalesHeader."NAVTechDays 2016 Reference No.";
+      CODEUNIT.RUN(CODEUNIT::"Edit CustLedgEntry RefCode",CustLedgerEntry);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

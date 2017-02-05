@@ -1,0 +1,134 @@
+OBJECT Codeunit 85042 Ship-to Address Mgt.
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.11.16;
+    Time=11:14:20;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Dictionary@1000 : Codeunit 85002;
+
+    [EventSubscriber(Table,222,OnAfterValidateEvent,Code,Skip,Error)]
+    LOCAL PROCEDURE OnShipToAddressCodeValidate@1002(VAR Rec@1000 : Record 222;VAR xRec@1001 : Record 222;CurrFieldNo@1002 : Integer);
+    VAR
+      ShiptoAddress@1003 : Record 222;
+      ShipToAddressCodeAlreadyInUse@1004 : TextConst 'ENU=Ship-to Address Code %1 is already in use for customer no. %2;ISL=Sendist-til a–setursk¢ti %1 er Áegar ° notkun fyrir vi–skiptamann nr. %2';
+    BEGIN
+      WITH ShiptoAddress DO BEGIN
+        SETFILTER("Customer No.",'<>%1',Rec."Customer No.");
+        SETRANGE(Code,Rec.Code);
+        IF FINDFIRST THEN
+          ERROR(ShipToAddressCodeAlreadyInUse,Code,"Customer No.");
+      END;
+    END;
+
+    [EventSubscriber(Table,36,OnBeforeValidateEvent,"Sell-to Customer No.",Skip,Error)]
+    LOCAL PROCEDURE OnBeforeSellToCustNoValidate@2(VAR Rec@1000 : Record 36;VAR xRec@1001 : Record 36;CurrFieldNo@1002 : Integer);
+    VAR
+      ShipToAddress@1100408001 : Record 222;
+    BEGIN
+      WITH Rec DO
+        IF CurrFieldNo IN [FIELDNO("Sell-to Customer No."),FIELDNO("Sell-to Customer Name")] THEN
+          IF CustHasShipToAddress("Sell-to Customer No.") THEN BEGIN
+            FilterCustShipToAddress(ShipToAddress,"Sell-to Customer No.");
+            IF PAGE.RUNMODAL(PAGE::"Ship-to Address List",ShipToAddress) = ACTION::LookupOK THEN
+              Dictionary.AddValue(GetShipToAddressParameterName,ShipToAddress.Code);
+          END;
+    END;
+
+    [EventSubscriber(Table,36,OnBeforeInsertEvent,"",Skip)]
+    LOCAL PROCEDURE OnBeforeInsert@1100408000(VAR Rec@1100408000 : Record 36;RunTrigger@1100408001 : Boolean);
+    VAR
+      ShipToAddress@1100408002 : Record 222;
+    BEGIN
+      WITH Rec DO
+        IF GETFILTER("Sell-to Customer No.") <> '' THEN
+          IF GETRANGEMIN("Sell-to Customer No.") = GETRANGEMAX("Sell-to Customer No.") THEN
+            IF CustHasShipToAddress(GETRANGEMAX("Sell-to Customer No.")) THEN BEGIN
+              FilterCustShipToAddress(ShipToAddress,GETRANGEMAX("Sell-to Customer No."));
+              IF PAGE.RUNMODAL(PAGE::"Ship-to Address List",ShipToAddress) = ACTION::LookupOK THEN
+                Dictionary.AddValue(GetShipToAddressParameterName,ShipToAddress.Code);
+            END;
+    END;
+
+    [EventSubscriber(Table,36,OnAfterInsertEvent,"",Skip,Error)]
+    LOCAL PROCEDURE OnAfterInsert@1100408003(VAR Rec@1100408000 : Record 36;RunTrigger@1100408001 : Boolean);
+    BEGIN
+      Dictionary.ClearValue(GetShipToAddressParameterName);
+    END;
+
+    [EventSubscriber(Table,36,OnAfterValidateEvent,"Location Code",Skip,Error)]
+    LOCAL PROCEDURE OnAfterLocationCodeValidate@1100408001(VAR Rec@1000 : Record 36;VAR xRec@1001 : Record 36;CurrFieldNo@1002 : Integer);
+    VAR
+      ShipToAddressCode@1003 : Code[10];
+    BEGIN
+      IF NOT Dictionary.GetCodeValue(GetShipToAddressParameterName,ShipToAddressCode) THEN EXIT;
+      IF (Rec."Ship-to Code" <> ShipToAddressCode) AND (ShipToAddressCode <> '') THEN
+        ValidateShipToCode(Rec,xRec,ShipToAddressCode);
+    END;
+
+    LOCAL PROCEDURE ValidateShipToCode@1003(VAR Rec@1000 : Record 36;VAR xRec@1001 : Record 36;ShipToCode@1100408000 : Code[10]);
+    VAR
+      Cust@1007 : Record 18;
+      ShipToAddr@1008 : Record 222;
+    BEGIN
+      WITH Rec DO BEGIN
+        IF "Ship-to Code" <> ShipToCode THEN BEGIN
+          "Ship-to Code" := ShipToCode;
+          ShipToAddr.GET("Sell-to Customer No.","Ship-to Code");
+          "Ship-to Name" := ShipToAddr.Name;
+          "Ship-to Name 2" := ShipToAddr."Name 2";
+          "Ship-to Address" := ShipToAddr.Address;
+          "Ship-to Address 2" := ShipToAddr."Address 2";
+          "Ship-to City" := ShipToAddr.City;
+          "Ship-to Post Code" := ShipToAddr."Post Code";
+          "Ship-to County" := ShipToAddr.County;
+          VALIDATE("Ship-to Country/Region Code",ShipToAddr."Country/Region Code");
+          "Ship-to Contact" := ShipToAddr.Contact;
+          "Shipment Method Code" := ShipToAddr."Shipment Method Code";
+          IF ShipToAddr."Location Code" <> '' THEN
+            VALIDATE("Location Code",ShipToAddr."Location Code");
+          "Shipping Agent Code" := ShipToAddr."Shipping Agent Code";
+          "Shipping Agent Service Code" := ShipToAddr."Shipping Agent Service Code";
+          IF ShipToAddr."Tax Area Code" <> '' THEN
+            "Tax Area Code" := ShipToAddr."Tax Area Code";
+          "Tax Liable" := ShipToAddr."Tax Liable";
+        END;
+      END;
+    END;
+
+    LOCAL PROCEDURE CustHasShipToAddress@3(CustomerNo@1100408000 : Code[20]) : Boolean;
+    VAR
+      ShipToAddress@1100408001 : Record 222;
+    BEGIN
+      FilterCustShipToAddress(ShipToAddress,CustomerNo);
+      EXIT(NOT ShipToAddress.ISEMPTY);
+    END;
+
+    LOCAL PROCEDURE FilterCustShipToAddress@4(VAR ShipToAddress@1100408000 : Record 222;CustomerNo@1100408001 : Code[20]);
+    BEGIN
+      ShipToAddress.FILTERGROUP(2);
+      ShipToAddress.SETRANGE("Customer No.",CustomerNo);
+      ShipToAddress.FILTERGROUP(0);
+    END;
+
+    LOCAL PROCEDURE GetShipToAddressParameterName@5() : Text;
+    BEGIN
+      EXIT('ShipToAddressCode');
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

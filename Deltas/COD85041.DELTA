@@ -1,0 +1,93 @@
+OBJECT Codeunit 85041 Sales Inv. Printer Selection
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.11.16;
+    Time=17:30:35;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Dictionary@1000 : Codeunit 85002;
+
+    [EventSubscriber(Page,43,OnBeforeActionEvent,PostAndSend)]
+    LOCAL PROCEDURE OnBeforeSalesCardPostAndPrint@2(VAR Rec@1000 : Record 36);
+    VAR
+      PrinterName@1001 : Text[250];
+    BEGIN
+      IF SendingToAPrinter(Rec) THEN
+        IF SelectPrinter(PrinterName) THEN
+          Dictionary.AddValue(PrinterNameVariableName,PrinterName);
+    END;
+
+    [EventSubscriber(Page,9301,OnBeforeActionEvent,PostAndSend)]
+    LOCAL PROCEDURE OnBeforeSalesListPostAndPrint@1(VAR Rec@1000 : Record 36);
+    VAR
+      PrinterName@1001 : Text;
+    BEGIN
+      IF SendingToAPrinter(Rec) THEN
+        IF SelectPrinter(PrinterName) THEN
+          Dictionary.AddValue(PrinterNameVariableName,PrinterName);
+    END;
+
+    [EventSubscriber(Codeunit,1,OnAfterFindPrinter)]
+    LOCAL PROCEDURE OnFindPrinter@7(ReportID@1000 : Integer;VAR PrinterName@1001 : Text[250]);
+    VAR
+      VariableVariant@1002 : Variant;
+    BEGIN
+      IF PrintingSalesInvoice(ReportID) THEN
+        IF Dictionary.GetAndClearValue(PrinterNameVariableName,VariableVariant) THEN
+          PrinterName := VariableVariant;
+    END;
+
+    LOCAL PROCEDURE SelectPrinter@5(VAR PrinterName@1001 : Text) : Boolean;
+    VAR
+      Printer@1000 : Record 2000000039;
+    BEGIN
+      IF PAGE.RUNMODAL(PAGE::Printers,Printer) = ACTION::LookupOK THEN BEGIN
+        PrinterName := Printer.Name;
+        EXIT(TRUE);
+      END;
+    END;
+
+    LOCAL PROCEDURE SendingToAPrinter@4(SalesHeader@1000 : Record 36) : Boolean;
+    VAR
+      DocumentSendingProfile@1001 : Record 60;
+    BEGIN
+      IF CURRENTCLIENTTYPE <> CLIENTTYPE::Windows THEN EXIT;
+      WITH SalesHeader DO BEGIN
+        IF "Bill-to Customer No." = '' THEN EXIT;
+        DocumentSendingProfile.GetDefaultForCustomer("Bill-to Customer No.",DocumentSendingProfile);
+        EXIT(DocumentSendingProfile.Printer = DocumentSendingProfile.Printer::"Yes (Use Default Settings)");
+      END;
+    END;
+
+    LOCAL PROCEDURE PrintingSalesInvoice@8(ReportID@1000 : Integer) : Boolean;
+    VAR
+      ReportSelections@1001 : Record 77;
+    BEGIN
+      WITH ReportSelections DO BEGIN
+        SETRANGE(Usage,Usage::"S.Invoice");
+        SETRANGE("Report ID",ReportID);
+        EXIT(FINDFIRST);
+      END;
+    END;
+
+    LOCAL PROCEDURE PrinterNameVariableName@9() : Text;
+    BEGIN
+      EXIT('SalesInvoicePrinterName');
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

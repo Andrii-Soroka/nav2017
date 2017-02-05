@@ -1,0 +1,62 @@
+OBJECT Codeunit 85003 Single Instance Record Storage
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.11.16;
+    Time=18:31:07;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    SingleInstance=Yes;
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      GlobalRecRef@1000 : RecordRef;
+      HasRecRef@1002 : Boolean;
+
+    PROCEDURE Set@5(RecVariant@1000 : Variant);
+    VAR
+      DataTypeMgt@1002 : Codeunit 701;
+      RecRef@1001 : RecordRef;
+    BEGIN
+      // Accepts any record, record reference or record id.
+      IF DataTypeMgt.GetRecordRef(RecVariant,RecRef) THEN
+        SetRecRef(RecRef);
+    END;
+
+    PROCEDURE SetRecRef@1(VAR RecRef@1000 : RecordRef);
+    BEGIN
+      GlobalRecRef := RecRef;
+      HasRecRef := TRUE;
+    END;
+
+    PROCEDURE GetRecRef@2(VAR RecRef@1000 : RecordRef) : Boolean;
+    BEGIN
+      RecRef := GlobalRecRef;
+      EXIT(HasRecRef);
+    END;
+
+    PROCEDURE SetRecordId@3(VAR RecordIdentifier@1000 : RecordID);
+    BEGIN
+      HasRecRef := GlobalRecRef.GET(RecordIdentifier);
+    END;
+
+    PROCEDURE GetRecordId@4(VAR RecordIdentifier@1000 : RecordID) : Boolean;
+    BEGIN
+      IF HasRecRef THEN BEGIN
+        RecordIdentifier := GlobalRecRef.RECORDID;
+        EXIT(TRUE);
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

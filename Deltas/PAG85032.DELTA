@@ -1,0 +1,56 @@
+OBJECT Page 85032 POS Items
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.11.16;
+    Time=19:00:53;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    SourceTable=Table27;
+    SourceTableView=SORTING(Search Description)
+                    WHERE(Blocked=CONST(No),
+                          Inventory=FILTER(>0));
+    PageType=ListPart;
+  }
+  CONTROLS
+  {
+    { 1   ;0   ;Container ;
+                ContainerType=ContentArea }
+
+    { 2   ;1   ;Group     ;
+                Name=Group;
+                GroupType=Repeater }
+
+    { 3   ;2   ;Field     ;
+                SourceExpr="No.";
+                OnAssistEdit=BEGIN
+                               TempPOSLine.AddItem("No.");
+                             END;
+                              }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr=Description }
+
+    { 5   ;2   ;Field     ;
+                SourceExpr=Inventory }
+
+  }
+  CODE
+  {
+    VAR
+      TempPOSLine@1000 : TEMPORARY Record 85030;
+
+    PROCEDURE Set@1(VAR POSLine@1000 : Record 85030);
+    BEGIN
+      TempPOSLine.COPY(POSLine,TRUE);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

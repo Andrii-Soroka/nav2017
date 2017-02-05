@@ -1,0 +1,21 @@
+OBJECT Modification "Single Instance Record Storage"(Codeunit 85003)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Single Instance Record Storage"(Codeunit 85003);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

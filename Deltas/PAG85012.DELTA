@@ -1,0 +1,55 @@
+OBJECT Page 85012 My Customer FactBox
+{
+  OBJECT-PROPERTIES
+  {
+    Date=24.10.16;
+    Time=14:12:47;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    SourceTable=Table21;
+    SourceTableView=SORTING(Customer No.,Open,Positive,Due Date,Currency Code)
+                    WHERE(Open=CONST(Yes));
+    PageType=ListPart;
+    OnFindRecord=VAR
+                   LogMyCustomerFactBoxEvents@1000 : Codeunit 85012;
+                 BEGIN
+                   LogMyCustomerFactBoxEvents.LogFindRec(Rec,xRec,Which);
+                   EXIT(FIND(Which));
+                 END;
+
+    OnNextRecord=VAR
+                   LogMyCustomerFactBoxEvents@1000 : Codeunit 85012;
+                 BEGIN
+                   LogMyCustomerFactBoxEvents.LogNextRec(Rec,xRec,Steps);
+                   EXIT(NEXT(Steps));
+                 END;
+
+  }
+  CONTROLS
+  {
+    { 1   ;0   ;Container ;
+                ContainerType=ContentArea }
+
+    { 2   ;1   ;Group     ;
+                Name=Group;
+                GroupType=Repeater }
+
+    { 3   ;2   ;Field     ;
+                SourceExpr="Due Date" }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr="Remaining Amt. (LCY)" }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

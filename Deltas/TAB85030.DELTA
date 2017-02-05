@@ -1,0 +1,250 @@
+OBJECT Table 85030 POS Lines
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.11.16;
+    Time=19:06:04;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+  }
+  FIELDS
+  {
+    { 1   ;   ;Line No.            ;Integer        }
+    { 5   ;   ;Type                ;Option        ;OnValidate=VAR
+                                                                TempPOSLine@1000 : TEMPORARY Record 85030;
+                                                              BEGIN
+                                                                TempPOSLine := Rec;
+                                                                INIT;
+
+                                                                Type := TempPOSLine.Type;
+                                                              END;
+
+                                                   CaptionML=ENU=Type;
+                                                   OptionCaptionML=ENU=" ,G/L Account,Item,Resource,Fixed Asset,Charge (Item)";
+                                                   OptionString=[ ,G/L Account,Item,Resource,Fixed Asset,Charge (Item)] }
+    { 6   ;   ;No.                 ;Code20        ;TableRelation=IF (Type=CONST(" ")) "Standard Text"
+                                                                 ELSE IF (Type=CONST(G/L Account),
+                                                                          System-Created Entry=CONST(No)) "G/L Account" WHERE (Direct Posting=CONST(Yes),
+                                                                                                                               Account Type=CONST(Posting),
+                                                                                                                               Blocked=CONST(No))
+                                                                                                                               ELSE IF (Type=CONST(G/L Account),
+                                                                                                                                        System-Created Entry=CONST(Yes)) "G/L Account"
+                                                                                                                                        ELSE IF (Type=CONST(Item)) Item
+                                                                                                                                        ELSE IF (Type=CONST(Resource)) Resource
+                                                                                                                                        ELSE IF (Type=CONST(Fixed Asset)) "Fixed Asset"
+                                                                                                                                        ELSE IF (Type=CONST("Charge (Item)")) "Item Charge";
+                                                   OnValidate=VAR
+                                                                TempPOSLine@1003 : TEMPORARY Record 85030;
+                                                              BEGIN
+                                                                TempPOSLine := Rec;
+                                                                INIT;
+
+                                                                Type := TempPOSLine.Type;
+                                                                "No." := TempPOSLine."No.";
+                                                                IF "No." = '' THEN
+                                                                  EXIT;
+                                                                IF Type <> Type::" " THEN
+                                                                  Quantity := TempPOSLine.Quantity;
+
+                                                                CASE Type OF
+                                                                  Type::" ":
+                                                                    BEGIN
+                                                                      StandardText.GET("No.");
+                                                                      Description := StandardText.Description;
+                                                                    END;
+                                                                  Type::"G/L Account":
+                                                                    BEGIN
+                                                                      GLAcc.GET("No.");
+                                                                      GLAcc.CheckGLAcc;
+                                                                      IF NOT "System-Created Entry" THEN
+                                                                        GLAcc.TESTFIELD("Direct Posting",TRUE);
+                                                                      Description := GLAcc.Name;
+                                                                    END;
+                                                                  Type::Item:
+                                                                    BEGIN
+                                                                      GetItem;
+                                                                      Item.TESTFIELD(Blocked,FALSE);
+                                                                      Item.TESTFIELD("Gen. Prod. Posting Group");
+                                                                      IF Item.Type = Item.Type::Inventory THEN BEGIN
+                                                                        Item.TESTFIELD("Inventory Posting Group");
+                                                                      END;
+                                                                      Description := Item.Description;
+                                                                      "Unit Price" := Item."Unit Price";
+                                                                      SetDefaultItemQuantity;
+                                                                    END;
+                                                                  Type::Resource:
+                                                                    BEGIN
+                                                                      Res.GET("No.");
+                                                                      Res.TESTFIELD(Blocked,FALSE);
+                                                                      Res.TESTFIELD("Gen. Prod. Posting Group");
+                                                                      Description := Res.Name;
+                                                                      "Unit Price" := Res."Unit Price";
+                                                                    END;
+                                                                  Type::"Fixed Asset":
+                                                                    BEGIN
+                                                                      FixedAsset.GET("No.");
+                                                                      FixedAsset.TESTFIELD(Inactive,FALSE);
+                                                                      FixedAsset.TESTFIELD(Blocked,FALSE);
+                                                                      Description := FixedAsset.Description;
+                                                                    END;
+                                                                  Type::"Charge (Item)":
+                                                                    BEGIN
+                                                                      ItemCharge.GET("No.");
+                                                                      Description := ItemCharge.Description;
+                                                                    END;
+                                                                END;
+
+                                                                IF Type <> Type::" " THEN
+                                                                  VALIDATE(Quantity);
+                                                              END;
+
+                                                   ValidateTableRelation=No;
+                                                   CaptionML=ENU=No. }
+    { 11  ;   ;Description         ;Text50        ;TableRelation=IF (Type=CONST(" ")) "Standard Text"
+                                                                 ELSE IF (Type=CONST(G/L Account),
+                                                                          System-Created Entry=CONST(No)) "G/L Account" WHERE (Direct Posting=CONST(Yes),
+                                                                                                                               Account Type=CONST(Posting),
+                                                                                                                               Blocked=CONST(No))
+                                                                                                                               ELSE IF (Type=CONST(G/L Account),
+                                                                                                                                        System-Created Entry=CONST(Yes)) "G/L Account"
+                                                                                                                                        ELSE IF (Type=CONST(Item)) Item
+                                                                                                                                        ELSE IF (Type=CONST(Resource)) Resource
+                                                                                                                                        ELSE IF (Type=CONST(Fixed Asset)) "Fixed Asset"
+                                                                                                                                        ELSE IF (Type=CONST("Charge (Item)")) "Item Charge";
+                                                   ValidateTableRelation=No;
+                                                   CaptionML=ENU=Description }
+    { 15  ;   ;Quantity            ;Decimal       ;OnValidate=VAR
+                                                                ItemLedgEntry@1000 : Record 32;
+                                                              BEGIN
+                                                                "Line Amount" := ROUND(Quantity * "Unit Price");
+                                                              END;
+
+                                                   CaptionML=ENU=Quantity;
+                                                   DecimalPlaces=0:5 }
+    { 22  ;   ;Unit Price          ;Decimal       ;OnValidate=BEGIN
+                                                                VALIDATE(Quantity);
+                                                              END;
+
+                                                   CaptionML=ENU=Unit Price;
+                                                   AutoFormatType=2;
+                                                   AutoFormatExpr="Currency Code" }
+    { 91  ;   ;Currency Code       ;Code10        ;TableRelation=Currency;
+                                                   CaptionML=ENU=Currency Code;
+                                                   Editable=No }
+    { 101 ;   ;System-Created Entry;Boolean       ;CaptionML=ENU=System-Created Entry;
+                                                   Editable=No }
+    { 103 ;   ;Line Amount         ;Decimal       ;CaptionML=ENU=Line Amount;
+                                                   Editable=No;
+                                                   AutoFormatType=1;
+                                                   AutoFormatExpr="Currency Code" }
+  }
+  KEYS
+  {
+    {    ;Line No.                                ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+    VAR
+      GLAcc@1002 : Record 15;
+      Item@1001 : Record 27;
+      Res@1000 : Record 156;
+      StandardText@1004 : Record 7;
+      FixedAsset@1003 : Record 5600;
+      ItemCharge@1006 : Record 5800;
+      SalesSetup@1005 : Record 311;
+
+    PROCEDURE AddItem@1(ItemNo@1000 : Code[20]);
+    BEGIN
+      IF FindLine(Type::Item,ItemNo) THEN BEGIN
+        VALIDATE(Quantity,Quantity + 1);
+        MODIFY;
+      END ELSE BEGIN
+        INIT;
+        "Line No." := GetNextLineNo;
+        VALIDATE(Type,Type::Item);
+        VALIDATE("No.",ItemNo);
+        VALIDATE(Quantity,1);
+        INSERT;
+      END;
+    END;
+
+    PROCEDURE AddResource@2(ResourceNo@1000 : Code[20]);
+    BEGIN
+      IF FindLine(Type::Resource,ResourceNo) THEN BEGIN
+        VALIDATE(Quantity,Quantity + 1);
+        MODIFY;
+      END ELSE BEGIN
+        INIT;
+        "Line No." := GetNextLineNo;
+        VALIDATE(Type,Type::Resource);
+        VALIDATE("No.",ResourceNo);
+        VALIDATE(Quantity,1);
+        INSERT;
+      END;
+    END;
+
+    LOCAL PROCEDURE GetItem@9();
+    BEGIN
+      TESTFIELD("No.");
+      IF "No." <> Item."No." THEN
+        Item.GET("No.");
+    END;
+
+    LOCAL PROCEDURE GetResource@49();
+    BEGIN
+      TESTFIELD("No.");
+      IF "No." <> Res."No." THEN
+        Res.GET("No.");
+    END;
+
+    LOCAL PROCEDURE SetDefaultItemQuantity@122();
+    BEGIN
+      GetSalesSetup;
+      IF SalesSetup."Default Item Quantity" THEN
+        VALIDATE(Quantity,1);
+    END;
+
+    LOCAL PROCEDURE GetSalesSetup@100();
+    BEGIN
+      SalesSetup.GET;
+    END;
+
+    LOCAL PROCEDURE GetNextLineNo@3() : Integer;
+    VAR
+      TempPOSLine@1000 : TEMPORARY Record 85030;
+    BEGIN
+      WITH TempPOSLine DO BEGIN
+        COPY(Rec,TRUE);
+        IF FINDLAST THEN
+          EXIT("Line No." + 10000)
+        ELSE
+          EXIT(10000);
+      END;
+    END;
+
+    LOCAL PROCEDURE FindLine@4(POSLineType@1000 : Option;POSLineNo@1001 : Code[20]) : Boolean;
+    VAR
+      TempPOSLine@1002 : TEMPORARY Record 85030;
+    BEGIN
+      WITH TempPOSLine DO BEGIN
+        COPY(Rec,TRUE);
+        SETRANGE(Type,POSLineType);
+        SETRANGE("No.",POSLineNo);
+        IF FINDFIRST THEN BEGIN
+          Rec := TempPOSLine;
+          EXIT(TRUE);
+        END;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

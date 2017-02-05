@@ -1,0 +1,21 @@
+OBJECT Modification "Resp. Center Subscribers"(Codeunit 85043)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Resp. Center Subscribers"(Codeunit 85043);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

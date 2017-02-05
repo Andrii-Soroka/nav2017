@@ -1,0 +1,37 @@
+OBJECT Modification "Posted Sales Invoice"(Page 132)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=04.11.16;
+    Time=14:55:39;
+    Modified=Yes;
+    Version List=NAVW110.0,NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    Target="Posted Sales Invoice"(Page 132);
+  }
+  CHANGES
+  {
+    { Insertion         ;InsertAfter=Control 68;
+                         ChangedElements=ControlCollection
+                         {
+                           { 84  ;2   ;Field     ;
+                                       ApplicationArea=#Basic,#Suite;
+                                       SourceExpr="NAVTechDays 2016 Reference No." }
+
+                         }
+                          }
+    { PropertyModification;
+                         Property=Version List;
+                         OriginalValue=NAVW110.0;
+                         ModifiedValue=NAVW110.0,NAVTechDays2016 }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

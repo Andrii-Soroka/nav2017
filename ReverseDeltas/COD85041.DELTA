@@ -1,0 +1,21 @@
+OBJECT Modification "Sales Inv. Printer Selection"(Codeunit 85041)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Sales Inv. Printer Selection"(Codeunit 85041);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

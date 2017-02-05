@@ -1,0 +1,33 @@
+OBJECT Modification "Cust. Ledger Entry"(Table 21)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=25.10.16;
+    Time=12:00:00;
+    Version List=NAVW110.0;
+  }
+  PROPERTIES
+  {
+    Target="Cust. Ledger Entry"(Table 21);
+  }
+  CHANGES
+  {
+    { Deletion          ;Target="NAVTechDays 2016 Reference No."(Field 85050);
+                         ChangedElements=FieldCollection
+                         {
+                           { 85050;  ;NAVTechDays 2016 Reference No.;Code20 }
+                         }
+                          }
+    { PropertyModification;
+                         Property=Version List;
+                         OriginalValue=NAVW110.0,NAVTechDays2016;
+                         ModifiedValue=NAVW110.0 }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,161 @@
+OBJECT Table 85001 User Client Type Profile Selec
+{
+  OBJECT-PROPERTIES
+  {
+    Date=26.10.16;
+    Time=15:17:48;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+  }
+  FIELDS
+  {
+    { 3   ;   ;User SID            ;GUID          ;TableRelation=User."User Security ID";
+                                                   TestTableRelation=No;
+                                                   CaptionML=[ENU=User SID;
+                                                              ISL=Notanda SID] }
+    { 6   ;   ;User ID             ;Code50        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup(User."User Name" WHERE (User Security ID=FIELD(User SID)));
+                                                   CaptionML=[ENU=User ID;
+                                                              ISL=Kenni notanda] }
+    { 500 ;   ;Windows Client Profile ID;Code30   ;TableRelation=Profile."Profile ID";
+                                                   CaptionML=[ENU=Windows Client Profile ID;
+                                                              ISL=Kenni forstillingar fyrir Windows bi–lara] }
+    { 501 ;   ;Web Client Profile ID;Code30       ;TableRelation=Profile."Profile ID";
+                                                   CaptionML=[ENU=Web Client Profile ID;
+                                                              ISL=Kenni forstillingar fyrir vefbi–lara] }
+    { 502 ;   ;Touch Client Profile ID;Code30     ;TableRelation=Profile."Profile ID";
+                                                   CaptionML=[ENU=Touch Client Profile ID;
+                                                              ISL=Kenni forstillingar fyrir snertiskj†] }
+    { 503 ;   ;Phone Client Profile ID;Code30     ;TableRelation=Profile."Profile ID";
+                                                   CaptionML=[ENU=Phone Client Profile ID;
+                                                              ISL=Kenni forstillingar fyrir s°mtëki] }
+    { 504 ;   ;Desktop Client Profile ID;Code30   ;TableRelation=Profile."Profile ID";
+                                                   CaptionML=[ENU=Desktop Client Profile ID;
+                                                              ISL=Kenni forstillingar fyrir skj†bor–] }
+    { 510 ;   ;Block User Profile Selection;Boolean;
+                                                   CaptionML=[ENU=Block User Profile Selection;
+                                                              ISL=Loka vali notanda † forstillingu] }
+  }
+  KEYS
+  {
+    {    ;User SID                                ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE AssistEdit@1();
+    VAR
+      UserPersonalization@1003 : Record 2000000073;
+      UserMgt@1002 : Codeunit 418;
+      SID@1001 : GUID;
+      UserID@1000 : Code[50];
+      UserAlreadyExistsErr@1004 : TextConst '@@@=User Personalization User1 already exists.;ENU=%1 %2 already exists.;ISL=%1 %2 er Áegar til.';
+    BEGIN
+      UserMgt.LookupUser(UserID,SID);
+
+      IF (SID <> "User SID") AND NOT ISNULLGUID(SID) THEN BEGIN
+        IF UserPersonalization.GET(SID) THEN BEGIN
+          UserPersonalization.CALCFIELDS("User ID");
+          ERROR(UserAlreadyExistsErr,TABLECAPTION,UserPersonalization."User ID");
+        END;
+
+        VALIDATE("User SID",SID);
+        CALCFIELDS("User ID");
+      END;
+    END;
+
+    PROCEDURE GetProfileIdByClientType@10000206() : Code[30];
+    BEGIN
+      CASE CURRENTCLIENTTYPE OF
+        CLIENTTYPE::Tablet :
+          EXIT("Touch Client Profile ID");
+        CLIENTTYPE::Windows :
+          EXIT("Windows Client Profile ID");
+        CLIENTTYPE::Web :
+          EXIT("Web Client Profile ID");
+        CLIENTTYPE::Phone :
+          EXIT("Phone Client Profile ID");
+        CLIENTTYPE::Desktop :
+          EXIT("Desktop Client Profile ID");
+      END;
+    END;
+
+    PROCEDURE SetProfileIdByClientType@10000207(ProfileID@10000200 : Code[30]);
+    VAR
+      UserPersonalization@10000202 : Record 2000000073;
+    BEGIN
+      CASE CURRENTCLIENTTYPE OF
+        CLIENTTYPE::Tablet :
+          "Touch Client Profile ID" := ProfileID;
+        CLIENTTYPE::Windows :
+          "Windows Client Profile ID" := ProfileID;
+        CLIENTTYPE::Web :
+          "Web Client Profile ID" := ProfileID;
+        CLIENTTYPE::Phone :
+          "Phone Client Profile ID" := ProfileID;
+        CLIENTTYPE::Desktop :
+          "Desktop Client Profile ID" := ProfileID;
+      END;
+    END;
+
+    PROCEDURE GetProfileByClientTypeSupport@10000200() : Boolean;
+    VAR
+      Profile@10000200 : Record 2000000072;
+    BEGIN
+      WITH Profile DO BEGIN
+        SETRANGE("Default Role Center",TRUE);
+        EXIT(ISEMPTY);
+      END;
+    END;
+
+    PROCEDURE SetProfileByClientTypeSupport@10000201();
+    VAR
+      Profile@10000200 : Record 2000000072;
+    BEGIN
+      WITH Profile DO BEGIN
+        SETRANGE("Default Role Center",TRUE);
+        MODIFYALL("Default Role Center",FALSE);
+      END;
+      CopyUserPersonalization;
+    END;
+
+    PROCEDURE CanSetProfileByClientTypeSupport@10000203() : Boolean;
+    VAR
+      Profile@10000200 : Record 2000000072;
+    BEGIN
+      EXIT(Profile.WRITEPERMISSION);
+    END;
+
+    LOCAL PROCEDURE CopyUserPersonalization@2();
+    VAR
+      UserPersonalization@1000 : Record 2000000073;
+      UserClientTypeProfileSelec@1001 : Record 85001;
+    BEGIN
+      IF UserPersonalization.FINDSET(TRUE) THEN REPEAT
+        IF NOT UserClientTypeProfileSelec.GET(UserPersonalization."User SID") THEN BEGIN
+          UserClientTypeProfileSelec.INIT;
+          UserClientTypeProfileSelec."User SID" := UserPersonalization."User SID";
+          UserClientTypeProfileSelec.INSERT;
+        END;
+        UserClientTypeProfileSelec."Windows Client Profile ID" := UserPersonalization."Profile ID";
+        UserClientTypeProfileSelec."Web Client Profile ID" := UserPersonalization."Profile ID";
+        UserClientTypeProfileSelec."Touch Client Profile ID" := UserPersonalization."Profile ID";
+        UserClientTypeProfileSelec."Phone Client Profile ID" := UserPersonalization."Profile ID";
+        UserClientTypeProfileSelec."Desktop Client Profile ID" := UserPersonalization."Profile ID";
+        UserClientTypeProfileSelec.MODIFY;
+        UserPersonalization."Profile ID" := '';
+        UserPersonalization.MODIFY;
+      UNTIL NEXT = 0;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

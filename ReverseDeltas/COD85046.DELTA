@@ -1,0 +1,21 @@
+OBJECT Modification "Copy MyRefNo To CustLedgE #2"(Codeunit 85046)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Copy MyRefNo To CustLedgE #2"(Codeunit 85046);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,21 @@
+OBJECT Modification "Ship-to Address Mgt."(Codeunit 85042)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Ship-to Address Mgt."(Codeunit 85042);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

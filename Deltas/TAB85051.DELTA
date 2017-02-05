@@ -1,0 +1,33 @@
+OBJECT Table 85051 Test Results
+{
+  OBJECT-PROPERTIES
+  {
+    Date=04.11.16;
+    Time=11:03:36;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer        }
+    { 2   ;   ;Test Name           ;Text50         }
+    { 3   ;   ;Test Duration       ;Duration       }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

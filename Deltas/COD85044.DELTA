@@ -1,0 +1,50 @@
+OBJECT Codeunit 85044 Edit CustLedgEntry RefCode
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.11.16;
+    Time=15:55:46;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    TableNo=21;
+    Permissions=TableData 21=m,
+                TableData 379=m;
+    OnRun=BEGIN
+            UpdateMyRefNo(Rec);
+          END;
+
+  }
+  CODE
+  {
+
+    [EventSubscriber(Page,25,OnAfterValidateEvent,"NAVTechDays 2016 Reference No.",Skip)]
+    LOCAL PROCEDURE OnCustLedgEntryRefNoValidate@1(VAR Rec@1000 : Record 21;VAR xRec@1001 : Record 21);
+    BEGIN
+      UpdateMyRefNo(Rec);
+    END;
+
+    LOCAL PROCEDURE UpdateMyRefNo@2(Rec@1000 : Record 21);
+    VAR
+      CustLedgEntry@1002 : Record 21;
+      DtldCustLedgEntry@1001 : Record 379;
+    BEGIN
+      // Code Clone from Codeunit 103
+      CustLedgEntry := Rec;
+      CustLedgEntry.LOCKTABLE;
+      CustLedgEntry.FIND;
+      CustLedgEntry."NAVTechDays 2016 Reference No." := Rec."NAVTechDays 2016 Reference No.";
+      DtldCustLedgEntry.SETCURRENTKEY("Cust. Ledger Entry No.");
+      DtldCustLedgEntry.SETRANGE("Cust. Ledger Entry No.",CustLedgEntry."Entry No.");
+      DtldCustLedgEntry.MODIFYALL("NAVTechDays 2016 Reference No.",Rec."NAVTechDays 2016 Reference No.");
+      CustLedgEntry.MODIFY;
+      Rec := CustLedgEntry;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

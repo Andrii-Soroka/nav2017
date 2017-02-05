@@ -1,0 +1,55 @@
+OBJECT Page 85031 POS Resources
+{
+  OBJECT-PROPERTIES
+  {
+    Date=07.11.16;
+    Time=19:00:45;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    SourceTable=Table156;
+    SourceTableView=SORTING(Search Name)
+                    WHERE(Blocked=CONST(No));
+    PageType=ListPart;
+  }
+  CONTROLS
+  {
+    { 1   ;0   ;Container ;
+                ContainerType=ContentArea }
+
+    { 2   ;1   ;Group     ;
+                Name=Group;
+                GroupType=Repeater }
+
+    { 3   ;2   ;Field     ;
+                SourceExpr="No.";
+                OnAssistEdit=BEGIN
+                               TempPOSLine.AddResource("No.");
+                             END;
+                              }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr=Name }
+
+    { 5   ;2   ;Field     ;
+                SourceExpr=Type }
+
+  }
+  CODE
+  {
+    VAR
+      TempPOSLine@1000 : TEMPORARY Record 85030;
+
+    PROCEDURE Set@1(VAR POSLine@1000 : Record 85030);
+    BEGIN
+      TempPOSLine.COPY(POSLine,TRUE);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

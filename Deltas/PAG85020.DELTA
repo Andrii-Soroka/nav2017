@@ -1,0 +1,117 @@
+OBJECT Page 85020 Grouping Test Results
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.11.16;
+    Time=11:22:46;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    InsertAllowed=No;
+    ModifyAllowed=No;
+    SourceTable=Table85051;
+    DataCaptionExpr=GetDataCaptionExpression;
+    PageType=ListPlus;
+    OnInit=BEGIN
+             TestEnabled := TRUE;
+           END;
+
+    ActionList=ACTIONS
+    {
+      { 5       ;    ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 6       ;1   ;Action    ;
+                      Name=Run Test;
+                      Promoted=Yes;
+                      Enabled=TestEnabled;
+                      PromotedIsBig=Yes;
+                      Image=Start;
+                      PromotedCategory=Process;
+                      OnAction=BEGIN
+                                 STARTSESSION(StartedSessionId,CODEUNIT::"Grouping Test",COMPANYNAME);
+                                 TestStarted := TRUE;
+                                 TestFinished := FALSE;
+                                 TestEnabled := FALSE;
+                               END;
+                                }
+      { 7       ;1   ;Action    ;
+                      Name=Result;
+                      RunObject=Page 85021;
+                      Promoted=Yes;
+                      Image=Line;
+                      PromotedCategory=Process }
+    }
+  }
+  CONTROLS
+  {
+    { 1   ;0   ;Container ;
+                ContainerType=ContentArea }
+
+    { 8   ;1   ;Field     ;
+                Name=PingPong;
+                ControlAddIn=[Microsoft.Dynamics.Nav.Client.PingPong;PublicKeyToken=31bf3856ad364e35] }
+
+    { 2   ;1   ;Group     ;
+                Name=Group;
+                GroupType=Repeater }
+
+    { 3   ;2   ;Field     ;
+                SourceExpr="Test Name";
+                Editable=FALSE }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr="Test Duration";
+                Editable=FALSE }
+
+  }
+  CODE
+  {
+    VAR
+      PleaseStartTest@1006 : TextConst 'ENU=Please start test';
+      TestRunner@1000 : TextConst 'ENU=Running Test...';
+      SendKeys@1007 : DotNet "'System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'.System.Windows.Forms.SendKeys" RUNONCLIENT;
+      StartedSessionId@1004 : Integer;
+      TestEnabled@1005 : Boolean;
+      TestStarted@1001 : Boolean;
+      TestFinished@1002 : Boolean;
+      TestRunnerFinished@1003 : TextConst 'ENU=Test finished...';
+
+    LOCAL PROCEDURE GetDataCaptionExpression@1() : Text;
+    BEGIN
+      IF TestFinished THEN
+        EXIT(TestRunnerFinished)
+      ELSE IF TestStarted THEN
+        EXIT(TestRunner)
+      ELSE
+        EXIT(PleaseStartTest);
+    END;
+
+    EVENT PingPong@-8::AddInReady@2();
+    BEGIN
+      CurrPage.PingPong.Ping(1000);
+    END;
+
+    EVENT PingPong@-8::Pong@3();
+    VAR
+      ActiveSession@1000 : Record 2000000110;
+    BEGIN
+      ActiveSession.SETRANGE("Session ID",StartedSessionId);
+
+      IF TestStarted AND NOT TestFinished THEN
+        IF FINDLAST THEN
+          SendKeys.Send('{F5}{F5}');
+
+      TestFinished := TestStarted AND ActiveSession.ISEMPTY;
+      IF TestFinished THEN
+        TestEnabled := TRUE;
+
+      CurrPage.PingPong.Ping(1000);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+
