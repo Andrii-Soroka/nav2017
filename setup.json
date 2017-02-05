@@ -1,11 +1,11 @@
 {
-  "navVersion": "10.0.13682.0",
+  "navVersion": "10.0.15052.0",
   "navProduct": "W1",
   "projectName": "NAV2017",
   "baseBranch": "master",
   "baseObjects": "2017W1.TXT",
   "uidOffset": "85000",
   "datetimeCulture": "is-IS",
-  "versionList":  "EventLogging110.0"
+  "versionList":  "EventLogging10.0"
 }
 
