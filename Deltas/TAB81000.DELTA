@@ -1,0 +1,85 @@
+OBJECT Table 81000 Weather Forcast Request Old
+{
+  OBJECT-PROPERTIES
+  {
+    Date=15.11.16;
+    Time=17:00:53;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    OnDelete=VAR
+               DataExch@1000 : Record 1220;
+               IntermediateDataImport@1001 : Record 1214;
+               Arguments@1002 : Record 81002;
+             BEGIN
+               IF "Data Exch. Entry No." > 0 THEN BEGIN
+                 DataExch.SETRANGE("Entry No.","Data Exch. Entry No.");
+                 IF NOT DataExch.ISEMPTY THEN
+                   DataExch.DELETEALL;
+                 IntermediateDataImport.SETRANGE("Data Exch. No.","Data Exch. Entry No.");
+                 IF NOT IntermediateDataImport.ISEMPTY THEN
+                   IntermediateDataImport.DELETEALL;
+               END;
+               Arguments.SETRANGE("Related Record",RECORDID);
+               IF NOT Arguments.ISEMPTY THEN
+                 Arguments.DELETEALL;
+             END;
+
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;AutoIncrement=Yes }
+    { 2   ;   ;Start Date & Time   ;DateTime      ;OnValidate=BEGIN
+                                                                "End Date & Time" := "Start Date & Time" + 86399000;
+                                                              END;
+                                                               }
+    { 3   ;   ;End Date & Time     ;DateTime      ;Editable=No }
+    { 4   ;   ;Latitude            ;Decimal        }
+    { 5   ;   ;Longitude           ;Decimal        }
+    { 6   ;   ;Data Exch. Entry No.;Integer       ;TableRelation="Data Exch." }
+    { 7   ;   ;Minimum             ;Decimal       ;Editable=No }
+    { 8   ;   ;Maximum             ;Decimal       ;Editable=No }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE GetLocation@1();
+    VAR
+      WeatherForcastMgt@1000 : Codeunit 81000;
+    BEGIN
+      WeatherForcastMgt.GetLocation(Latitude,Longitude);
+    END;
+
+    PROCEDURE DownloadWeatherForcast@2();
+    VAR
+      WeatherForcastMgt@1000 : Codeunit 81000;
+    BEGIN
+      WeatherForcastMgt.DownloadWeatherForcast(Rec);
+    END;
+
+    PROCEDURE ExportSourceDocument@3();
+    VAR
+      DataExch@1000 : Record 1220;
+      TempBlob@1001 : Record 99008535;
+      FileMgt@1002 : Codeunit 419;
+    BEGIN
+      DataExch.GET("Data Exch. Entry No.");
+      DataExch.CALCFIELDS("File Content");
+      TempBlob.Blob := DataExch."File Content";
+      FileMgt.BLOBExport(TempBlob,'Weather.xml',TRUE);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

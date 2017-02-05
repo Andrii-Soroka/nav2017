@@ -1,0 +1,70 @@
+OBJECT Codeunit 85037 Read Data Exch. from ExcelFile
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.11.16;
+    Time=15:50:41;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    TableNo=1220;
+    OnRun=VAR
+            TempBlob@1000 : Record 99008535;
+          BEGIN
+            INIT;
+            "File Name" := COPYSTR(FileMgt.BLOBImportWithFilter(TempBlob,ImportBankStmtTxt,'',FileFilterTxt,FileFilterExtensionTxt),1,250);
+            IF "File Name" = '' THEN EXIT;
+            IF LOWERCASE(FileMgt.GetExtension("File Name")) = 'xls' THEN
+              ConvertXlsToXlsx(TempBlob);
+
+            "File Content" := TempBlob.Blob
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      ImportBankStmtTxt@1007 : TextConst 'ENU=Select a file to import;ISL=Velja skr† til a– flytja inn';
+      FileFilterTxt@1006 : TextConst 'ENU=All Files(*.*)|*.*|Excel Files(*.xls*)|*.xls*;ISL=Allar skr†r(*.*)|*.*|Excel skr†r(*.xls*)|*.xls*';
+      FileFilterExtensionTxt@1005 : TextConst '@@@={Locked};ENU=xls,xlsx;ISL=xls,xlsx';
+      FileMgt@10000200 : Codeunit 419;
+      UnableToConvertExcel@10000201 : TextConst 'ENU=Unable to convert Excel 97-2003 document to Open Excel document.  Make sure that Excel 2013 is installed on the NAV server;ISL=Umbreyting † skjali fr† Excel 97-2003 yfir ° opna Excel sni–i– t¢kst ekki.  Gangi– £r skugga um a– Excel 2013 sÇ uppsett † NAV Áj¢ninum.';
+
+    LOCAL PROCEDURE ConvertXlsToXlsx@10000200(VAR TempBlob@10000200 : Record 99008535);
+    BEGIN
+      IF NOT TryConvertXlsToXlsxUsingExcel2013(TempBlob) THEN
+        ERROR(UnableToConvertExcel);
+    END;
+
+    [TryFunction]
+    LOCAL PROCEDURE TryConvertXlsToXlsxUsingExcel2013@10000203(VAR TempBlob@10000200 : Record 99008535);
+    VAR
+      XlApp@10000202 : DotNet "'Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c'.Microsoft.Office.Interop.Excel.ApplicationClass";
+      XlWrkBk@10000205 : DotNet "'Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c'.Microsoft.Office.Interop.Excel.Workbook";
+      XlSaveAsAccessMode@10000204 : DotNet "'Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c'.Microsoft.Office.Interop.Excel.XlSaveAsAccessMode";
+      XlFileFormat@10000206 : DotNet "'Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c'.Microsoft.Office.Interop.Excel.XlFileFormat";
+      XlHelper@10000201 : DotNet "'Microsoft.Dynamics.Nav.Integration.Office, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'.Microsoft.Dynamics.Nav.Integration.Office.Excel.ExcelHelper";
+      ServerFileName@10000203 : Text;
+    BEGIN
+      ServerFileName := FileMgt.ServerTempFileName('xls');
+      FileMgt.BLOBExportToServerFile(TempBlob,ServerFileName);
+
+      XlApp := XlApp.ApplicationClass;
+      XlHelper.CallOpen(XlApp,ServerFileName);
+      XlWrkBk := XlApp.ActiveWorkbook;
+
+      ServerFileName := FileMgt.CombinePath(FileMgt.GetDirectoryName(ServerFileName),FileMgt.GetFileNameWithoutExtension(ServerFileName)) + '.xlsx';
+      XlWrkBk.SaveAs(ServerFileName,XlFileFormat.xlWorkbookDefault,'','',FALSE,FALSE,XlSaveAsAccessMode.xlNoChange, FALSE, FALSE, FALSE, FALSE, FALSE);
+      XlWrkBk.Close(FALSE,'',TRUE);
+      XlApp.Quit;
+
+      FileMgt.BLOBImportFromServerFile(TempBlob,ServerFileName);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

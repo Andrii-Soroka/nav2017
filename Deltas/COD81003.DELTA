@@ -1,0 +1,72 @@
+OBJECT Codeunit 81003 Download From Url
+{
+  OBJECT-PROPERTIES
+  {
+    Date=15.11.16;
+    Time=15:42:22;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    TableNo=1220;
+    OnRun=VAR
+            Arguments@1002 : Record 81002;
+            TempBlob@1000 : Record 99008535;
+            Url@1001 : Text;
+          BEGIN
+            GetRequest(Rec,Arguments);
+            TestRequest(Arguments);
+            DownloadFromUrl(Arguments.Url,TempBlob);
+            SaveToDateExchange(Rec,TempBlob);
+          END;
+
+  }
+  CODE
+  {
+
+    LOCAL PROCEDURE GetRequest@1(DataExch@1000 : Record 1220;VAR Arguments@1002 : Record 81002);
+    VAR
+      RecRef@1001 : RecordRef;
+    BEGIN
+      RecRef.GET(DataExch."Related Record");
+      RecRef.SETTABLE(Arguments);
+    END;
+
+    LOCAL PROCEDURE TestRequest@2(Arguments@1000 : Record 81002);
+    BEGIN
+      WITH Arguments DO
+        TESTFIELD(Url);
+    END;
+
+    LOCAL PROCEDURE DownloadFromUrl@5(Url@1001 : Text;VAR TempBlob@1002 : Record 99008535);
+    VAR
+      HttpWebRequestMgt@1000 : Codeunit 1297;
+      ResponseInStream@1005 : InStream;
+      HttpStatusCode@1004 : DotNet "'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'.System.Net.HttpStatusCode";
+      ResponseHeaders@1003 : DotNet "'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'.System.Collections.Specialized.NameValueCollection";
+    BEGIN
+      WITH HttpWebRequestMgt DO BEGIN
+        HttpWebRequestMgt.Initialize(Url);
+        TempBlob.Blob.CREATEINSTREAM(ResponseInStream);
+        IF NOT HttpWebRequestMgt.GetResponse(ResponseInStream,HttpStatusCode,ResponseHeaders) THEN
+          HttpWebRequestMgt.ProcessFaultResponse('NAV TechDays 2016');
+        IF HttpStatusCode.ToString <> HttpStatusCode.OK.ToString THEN
+          ERROR('Download Failed: %1',HttpStatusCode.ToString);
+      END;
+    END;
+
+    LOCAL PROCEDURE SaveToDateExchange@6(VAR DataExch@1000 : Record 1220;TempBlob@1001 : Record 99008535);
+    BEGIN
+      WITH DataExch DO BEGIN
+        "File Content" := TempBlob.Blob;
+        IF "Entry No." > 0 THEN
+          MODIFY;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

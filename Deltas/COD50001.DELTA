@@ -1,0 +1,86 @@
+OBJECT Codeunit 50001 Download into Data Exchange
+{
+  OBJECT-PROPERTIES
+  {
+    Date=16.11.16;
+    Time=14:06:35;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    TableNo=1220;
+    OnRun=VAR
+            Arguments@1002 : Record 81002;
+            PostContent@1000 : Record 99008535;
+          BEGIN
+            GetArguments(Rec,Arguments);
+            IF Arguments.Content.HASVALUE THEN BEGIN
+              Arguments.CALCFIELDS(Content);
+              PostContent.Blob := Arguments.Content;
+              PostIntoDataExch(Rec,PostContent,Arguments.Url);
+            END ELSE
+              DownloadIntoDataExch(Rec,Arguments.Url);
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      ImportBankStmtTxt@1007 : TextConst 'ENU=Select a file to import';
+      FileFilterTxt@1006 : TextConst 'ENU="All Files(*.*)|*.*|XML Files(*.xml)|*.xml|Text Files(*.txt;*.csv;*.asc)|*.txt;*.csv;*.asc,*.nda"';
+      FileFilterExtensionTxt@1005 : TextConst '@@@={Locked};ENU=txt,csv,asc,xml,nda';
+
+    LOCAL PROCEDURE GetArguments@1(DataExch@1002 : Record 1220;VAR Arguments@1000 : Record 81002);
+    VAR
+      RecRef@1001 : RecordRef;
+    BEGIN
+      RecRef.GET(DataExch."Related Record");
+      RecRef.SETTABLE(Arguments);
+    END;
+
+    LOCAL PROCEDURE DownloadIntoDataExch@2(VAR DataExch@1000 : Record 1220;Url@1001 : Text);
+    VAR
+      TempBlob@1006 : Record 99008535;
+      HttpWebRequestMgt@1005 : Codeunit 1297;
+      ResponseInStream@1004 : InStream;
+      HttpStatusCode@1003 : DotNet "'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'.System.Net.HttpStatusCode";
+      ResponseHeaders@1002 : DotNet "'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'.System.Collections.Specialized.NameValueCollection";
+    BEGIN
+      WITH HttpWebRequestMgt DO BEGIN
+        Initialize(Url);
+        TempBlob.Blob.CREATEINSTREAM(ResponseInStream);
+        IF NOT GetResponse(ResponseInStream,HttpStatusCode,ResponseHeaders) THEN
+          ProcessFaultResponse('NAV TechDays 2016');
+        IF HttpStatusCode.ToString <> HttpStatusCode.OK.ToString THEN
+          ERROR('Download Failed: %1',HttpStatusCode.ToString);
+        DataExch."File Content" := TempBlob.Blob;
+      END;
+    END;
+
+    LOCAL PROCEDURE PostIntoDataExch@3(VAR DataExch@1000 : Record 1220;PostContent@1007 : Record 99008535;Url@1001 : Text);
+    VAR
+      TempBlob@1006 : Record 99008535;
+      HttpWebRequestMgt@1005 : Codeunit 1297;
+      ResponseInStream@1004 : InStream;
+      HttpStatusCode@1003 : DotNet "'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'.System.Net.HttpStatusCode";
+      ResponseHeaders@1002 : DotNet "'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'.System.Collections.Specialized.NameValueCollection";
+    BEGIN
+      WITH HttpWebRequestMgt DO BEGIN
+        Initialize(Url);
+        SetMethod('POST');
+        AddBodyBlob(PostContent);
+        TempBlob.Blob.CREATEINSTREAM(ResponseInStream);
+        IF NOT GetResponse(ResponseInStream,HttpStatusCode,ResponseHeaders) THEN
+          ProcessFaultResponse('NAV TechDays 2016');
+        IF HttpStatusCode.ToString <> HttpStatusCode.OK.ToString THEN
+          ERROR('Download Failed: %1',HttpStatusCode.ToString);
+        DataExch."File Content" := TempBlob.Blob;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

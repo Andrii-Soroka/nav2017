@@ -1,0 +1,83 @@
+OBJECT Codeunit 50000 Workshop test
+{
+  OBJECT-PROPERTIES
+  {
+    Date=16.11.16;
+    Time=16:20:29;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    TableNo=50001;
+    OnRun=VAR
+            Arguments@1000 : Record 81002;
+          BEGIN
+            Arguments.INIT;
+            Arguments.ID := CREATEGUID;
+            //Arguments.Url := 'http://graphical.weather.gov/xml/sample_products/browser_interface/ndfdXMLclient.php?lat=40.76&lon=-73.97&product=time-series&begin=2016-11-17&end=2016-11-17&maxt=maxt&mint=mint';
+            Arguments.Url :=
+              STRSUBSTNO(
+                'http://graphical.weather.gov/xml/sample_products/browser_interface/ndfdXMLclient.php?lat=%1&lon=%2&product=time-series&begin=%3&end=%4&maxt=maxt&mint=mint',
+                FORMAT(Latitude,0,9),
+                FORMAT(Longitude,0,9),
+                FORMAT("Start Date & Time",0,'<Year4>-<Month,2>-<Day,2>T<Hours24,2>:<Minutes,2>:<Seconds,2>'),
+                FORMAT("End Date & Time",0,'<Year4>-<Month,2>-<Day,2>T<Hours24,2>:<Minutes,2>:<Seconds,2>')
+                );
+            Arguments."Related Record" := Rec.RECORDID;
+            Arguments.INSERT;
+
+            Rec."Data Exch. Entry No." := ImportWeatherForcast(Arguments);
+            Rec.MODIFY;
+          END;
+
+  }
+  CODE
+  {
+
+    LOCAL PROCEDURE ImportWeatherForcast@2(Arguments@1004 : Record 81002) DataExchEntryNo : Integer;
+    VAR
+      DataExch@1001 : Record 1220;
+      DataExchDef@1000 : Record 1222;
+      DataExchMapping@1005 : Record 1224;
+      IntermediateDataImport@1006 : Record 1214;
+      MemoryStream@1003 : DotNet "'mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'.System.IO.MemoryStream";
+      InStr@1002 : InStream;
+    BEGIN
+      DataExchDef.GET('WORKSHOP');
+      DataExch."Related Record" := Arguments.RECORDID;
+      // DataExch.ImportFileContent(DataExchDef);
+      // DataExch."File Content".CREATEINSTREAM(InStr);
+      // MemoryStream := MemoryStream.MemoryStream;
+      // COPYSTREAM(MemoryStream,InStr);
+      //
+      // MESSAGE('Created Data Exchange No. %1, Content length: %2',DataExch."Entry No.",MemoryStream.Length);
+
+      DataExch.ImportToDataExch(DataExchDef);
+
+      IF DataExchDef."Data Handling Codeunit" > 0 THEN
+        CODEUNIT.RUN(DataExchDef."Data Handling Codeunit",DataExch);
+
+      DataExchMapping.SETRANGE("Data Exch. Def Code",DataExch."Data Exch. Def Code");
+      DataExchMapping.SETRANGE("Data Exch. Line Def Code",DataExch."Data Exch. Line Def Code");
+      IF DataExchMapping.FINDSET THEN REPEAT
+        IF DataExchMapping."Pre-Mapping Codeunit" > 0 THEN
+          CODEUNIT.RUN(DataExchMapping."Pre-Mapping Codeunit",DataExch);
+        IF DataExchMapping."Mapping Codeunit" > 0 THEN
+          CODEUNIT.RUN(DataExchMapping."Mapping Codeunit",DataExch);
+        IF DataExchMapping."Post-Mapping Codeunit" > 0 THEN
+          CODEUNIT.RUN(DataExchMapping."Post-Mapping Codeunit",DataExch);
+      UNTIL DataExchMapping.NEXT = 0;
+
+      IntermediateDataImport.SETRANGE("Data Exch. No.",DataExch."Entry No.");
+      IntermediateDataImport.DELETEALL;
+      DataExch.DELETE(TRUE);
+
+      EXIT(DataExch."Entry No.");
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

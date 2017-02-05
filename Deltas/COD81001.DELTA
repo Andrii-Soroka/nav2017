@@ -1,0 +1,93 @@
+OBJECT Codeunit 81001 Download Weather Forcast
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.11.16;
+    Time=14:21:25;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    TableNo=1220;
+    OnRun=VAR
+            TempBlob@1000 : Record 99008535;
+            Url@1001 : Text;
+          BEGIN
+            GetRequest(Rec);
+            TestRequest;
+            Url := GetDownloadUrl;
+            DownloadFromUrl(Url,TempBlob);
+            SaveToDateExchange(Rec,TempBlob);
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      WeatherForcastRequest@1000 : Record 81000;
+
+    LOCAL PROCEDURE GetRequest@1(DataExch@1000 : Record 1220);
+    VAR
+      RecRef@1001 : RecordRef;
+    BEGIN
+      RecRef.GET(DataExch."Related Record");
+      RecRef.SETTABLE(WeatherForcastRequest);
+    END;
+
+    LOCAL PROCEDURE TestRequest@2();
+    BEGIN
+      WITH WeatherForcastRequest DO BEGIN
+        TESTFIELD("Start Date & Time");
+        TESTFIELD("End Date & Time");
+        TESTFIELD(Latitude);
+        TESTFIELD(Longitude);
+      END;
+    END;
+
+    LOCAL PROCEDURE GetDownloadUrl@3() Url : Text;
+    BEGIN
+      WITH WeatherForcastRequest DO
+        Url :=
+          STRSUBSTNO(
+            'http://graphical.weather.gov/xml/sample_products/browser_interface/ndfdXMLclient.php?lat=%1&lon=%2&product=time-series&begin=%3&end=%4&maxt=maxt&mint=mint',
+            FORMAT(Latitude,0,9),
+            FORMAT(Longitude,0,9),
+            FORMAT("Start Date & Time",0,'<Year4>-<Month,2>-<Day,2>T<Hours24,2>:<Minutes,2>:<Seconds,2>'),
+            FORMAT("End Date & Time",0,'<Year4>-<Month,2>-<Day,2>T<Hours24,2>:<Minutes,2>:<Seconds,2>')
+            );
+
+      //Hours24, Hours12, Minutes, Seconds, Thousands, AM/PM, Second dec
+      //Day, Month, Month Text, Quarter, Year, Year4, Week, Week Year, Week Year4, Weekday, Weekday Text, Closing
+    END;
+
+    LOCAL PROCEDURE DownloadFromUrl@5(Url@1001 : Text;VAR TempBlob@1002 : Record 99008535);
+    VAR
+      HttpWebRequestMgt@1000 : Codeunit 1297;
+      ResponseInStream@1005 : InStream;
+      HttpStatusCode@1004 : DotNet "'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'.System.Net.HttpStatusCode";
+      ResponseHeaders@1003 : DotNet "'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'.System.Collections.Specialized.NameValueCollection";
+    BEGIN
+      WITH HttpWebRequestMgt DO BEGIN
+        HttpWebRequestMgt.Initialize(Url);
+        TempBlob.Blob.CREATEINSTREAM(ResponseInStream);
+        HttpWebRequestMgt.GetResponse(ResponseInStream,HttpStatusCode,ResponseHeaders);
+        IF HttpStatusCode.ToString <> HttpStatusCode.OK.ToString THEN
+          ERROR('Download Failed: %1',HttpStatusCode.ToString);
+      END;
+    END;
+
+    LOCAL PROCEDURE SaveToDateExchange@6(VAR DataExch@1000 : Record 1220;TempBlob@1001 : Record 99008535);
+    BEGIN
+      WITH DataExch DO BEGIN
+        "File Content" := TempBlob.Blob;
+        IF "Entry No." > 0 THEN
+          MODIFY;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

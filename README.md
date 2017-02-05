@@ -1,7 +1,8 @@
 # nav2017
 NAV 2017 Source Code Management
+Extending the Data Exchange Framework workshop
 
-Base objects stored locally in Work Folder as "baseObjects"
+Object are published without as-is.  Use with care.
 
 Gunnar Thor Gestsson
 http://www.dynamics.is

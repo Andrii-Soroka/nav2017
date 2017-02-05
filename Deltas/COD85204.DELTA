@@ -1,0 +1,50 @@
+OBJECT Codeunit 85204 Xml Node Name Support Mgt.
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.11.16;
+    Time=12:01:25;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+
+    [EventSubscriber(Table,1265,OnAfterValidateEvent,"Use Node Name as Value")]
+    LOCAL PROCEDURE OnMappingBufValidate@2(VAR Rec@1000 : Record 1265;VAR xRec@1001 : Record 1265;CurrFieldNo@1002 : Integer);
+    VAR
+      DataExchColumnDef@1003 : Record 1223;
+      IncorrectFieldType@1004 : TextConst 'ENU=This option can only be used on sources for fields, not for the record loop';
+    BEGIN
+      WITH Rec DO BEGIN
+        TESTFIELD(Source);
+        IF Type <> Type::Field THEN
+          ERROR(IncorrectFieldType);
+        DataExchColumnDef.GET("Data Exchange Def Code","Data Exchange Line Def Code","Column No.");
+        DataExchColumnDef.VALIDATE("Use Node Name as Value","Use Node Name as Value");
+        DataExchColumnDef.MODIFY(TRUE);
+      END;
+    END;
+
+    [EventSubscriber(Table,1265,OnBeforeInsertEvent)]
+    LOCAL PROCEDURE OnMappingBufInsert@4(VAR Rec@1000 : Record 1265;RunTrigger@1001 : Boolean);
+    VAR
+      DataExchColumnDef@1002 : Record 1223;
+    BEGIN
+      WITH Rec DO
+        IF Type = Type::Field THEN
+          IF DataExchColumnDef.GET("Data Exchange Def Code","Data Exchange Line Def Code","Column No.") THEN
+            "Use Node Name as Value" := DataExchColumnDef."Use Node Name as Value";
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

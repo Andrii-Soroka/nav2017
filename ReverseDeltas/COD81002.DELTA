@@ -1,0 +1,21 @@
+OBJECT Modification "Fahrenheit to Celsius"(Codeunit 81002)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Fahrenheit to Celsius"(Codeunit 81002);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

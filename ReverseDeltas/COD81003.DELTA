@@ -1,0 +1,21 @@
+OBJECT Modification "Download From Url"(Codeunit 81003)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Download From Url"(Codeunit 81003);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

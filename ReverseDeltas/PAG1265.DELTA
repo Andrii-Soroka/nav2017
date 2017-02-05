@@ -1,0 +1,35 @@
+OBJECT Modification "Data Exch. Setup Subform"(Page 1265)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=25.10.16;
+    Time=12:00:00;
+    Version List=NAVW110.0;
+  }
+  PROPERTIES
+  {
+    Target="Data Exch. Setup Subform"(Page 1265);
+  }
+  CHANGES
+  {
+    { Deletion          ;Target=Control 9;
+                         ChangedElements=ControlCollection
+                         {
+                           { 9   ;2   ;Field     ;
+                                       SourceExpr="Use Node Name as Value" }
+
+                         }
+                          }
+    { PropertyModification;
+                         Property=Version List;
+                         OriginalValue=NAVW110.0,NAVTechDays2016;
+                         ModifiedValue=NAVW110.0 }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

@@ -1,0 +1,40 @@
+OBJECT Table 50001 Weather Forcast Request New
+{
+  OBJECT-PROPERTIES
+  {
+    Date=16.11.16;
+    Time=16:19:06;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;AutoIncrement=Yes }
+    { 2   ;   ;Start Date & Time   ;DateTime      ;OnValidate=BEGIN
+                                                                "End Date & Time" := "Start Date & Time" + 86399000;
+                                                              END;
+                                                               }
+    { 3   ;   ;End Date & Time     ;DateTime      ;Editable=No }
+    { 4   ;   ;Latitude            ;Decimal        }
+    { 5   ;   ;Longitude           ;Decimal        }
+    { 6   ;   ;Data Exch. Entry No.;Integer       ;TableRelation="Data Exch." }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Data Exch. Entry No.                     }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

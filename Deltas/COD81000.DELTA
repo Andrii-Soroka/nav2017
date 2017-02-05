@@ -1,0 +1,143 @@
+OBJECT Codeunit 81000 Weather Forcast Management
+{
+  OBJECT-PROPERTIES
+  {
+    Date=15.11.16;
+    Time=16:41:22;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+
+    PROCEDURE GetLocation@2(VAR Latitude@1002 : Decimal;VAR Longitude@1003 : Decimal);
+    VAR
+      Geolocation@1000 : Record 806;
+      GetCurrentLocation@1001 : Page 88806;
+    BEGIN
+      GetCurrentLocation.RUNMODAL;
+      GetCurrentLocation.GetLocation(Geolocation);
+      Latitude := Geolocation.Latitude;
+      Longitude := Geolocation.Longitude;
+    END;
+
+    PROCEDURE DownloadWeatherForcast@1(VAR WeatherForcastRequest@1002 : Record 81000);
+    VAR
+      DataExch@1000 : Record 1220;
+      DataExchDef@1001 : Record 1222;
+    BEGIN
+      DataExchDef.GET('WEATHER.GOV');
+      PrepareWeatherForcast(WeatherForcastRequest);
+      PrepareDataExchange(DataExch,WeatherForcastRequest);
+      DownloadToDataExchange(DataExch,DataExchDef);
+      ImportDataExchangeFields(DataExch,DataExchDef);
+      ImportToIntermediate(DataExch,DataExchDef);
+      UpdateWeatherForcast(DataExch,WeatherForcastRequest);
+      CleanUpIntermediate(DataExch);
+    END;
+
+    LOCAL PROCEDURE PrepareWeatherForcast@3(VAR WeatherForcastRequest@1000 : Record 81000);
+    BEGIN
+      WITH WeatherForcastRequest DO
+        IF "Entry No." = 0 THEN
+          INSERT;
+    END;
+
+    LOCAL PROCEDURE PrepareDataExchange@5(VAR DataExch@1001 : Record 1220;WeatherForcastRequest@1002 : Record 81000);
+    VAR
+      Arguments@1000 : Record 81002;
+    BEGIN
+      DataExch.INIT;
+      DataExch."Related Record" := WeatherForcastRequest.RECORDID;
+
+      // WITH WeatherForcastRequest DO
+      //  Arguments.Url :=
+      //    STRSUBSTNO(
+      //      'http://graphical.weather.gov/xml/sample_products/browser_interface/ndfdXMLclient.php?lat=%1&lon=%2&product=time-series&begin=%3&end=%4&maxt=maxt&mint=mint',
+      //      FORMAT(Latitude,0,9),
+      //      FORMAT(Longitude,0,9),
+      //      FORMAT("Start Date & Time",0,'<Year4>-<Month,2>-<Day,2>T<Hours24,2>:<Minutes,2>:<Seconds,2>'),
+      //      FORMAT("End Date & Time",0,'<Year4>-<Month,2>-<Day,2>T<Hours24,2>:<Minutes,2>:<Seconds,2>')
+      //      );
+      // Arguments."Related Record" := WeatherForcastRequest.RECORDID;
+      // Arguments.ID := CREATEGUID;
+      // Arguments.INSERT;
+      // DataExch."Related Record" := Arguments.RECORDID;
+    END;
+
+    LOCAL PROCEDURE DownloadToDataExchange@6(VAR DataExch@1001 : Record 1220;DataExchDef@1000 : Record 1222);
+    BEGIN
+      IF NOT DataExch.ImportFileContent(DataExchDef) THEN
+        ERROR('Download Failed!');
+    END;
+
+    LOCAL PROCEDURE ImportDataExchangeFields@7(VAR DataExch@1001 : Record 1220;DataExchDef@1000 : Record 1222);
+    BEGIN
+      DataExch.ImportToDataExch(DataExchDef);
+    END;
+
+    LOCAL PROCEDURE ImportToIntermediate@8(VAR DataExch@1002 : Record 1220;DataExchDef@1001 : Record 1222);
+    BEGIN
+      IF DataExchDef."Data Handling Codeunit" <> 0 THEN
+        CODEUNIT.RUN(DataExchDef."Data Handling Codeunit",DataExch);
+    END;
+
+    LOCAL PROCEDURE UpdateWeatherForcast@12(VAR DataExch@1001 : Record 1220;VAR WeatherForcastRequest@1000 : Record 81000);
+    BEGIN
+      WITH WeatherForcastRequest DO BEGIN
+        GetValue(DataExch,'maximum',Maximum);
+        GetValue(DataExch,'minimum',Minimum);
+        "Data Exch. Entry No." := DataExch."Entry No.";
+        MODIFY;
+      END;
+    END;
+
+    LOCAL PROCEDURE CleanUpIntermediate@11(VAR DataExch@1000 : Record 1220);
+    VAR
+      IntermediateDataImport@1001 : Record 1214;
+    BEGIN
+      IntermediateDataImport.SETRANGE("Data Exch. No.",DataExch."Entry No.");
+      IntermediateDataImport.DELETEALL;
+    END;
+
+    LOCAL PROCEDURE GetValue@10(VAR DataExch@1005 : Record 1220;ValueType@1000 : Text;VAR Result@1001 : Decimal);
+    VAR
+      IntermediateDataImport@1002 : Record 1214;
+      WeatherForcastBuffer@1006 : Record 81001;
+      RecordNo@1004 : Integer;
+      FoundValue@1003 : Text;
+    BEGIN
+      WITH IntermediateDataImport DO
+        IF FindRecordNo(DataExch."Entry No.",DATABASE::"Weather Forcast Buffer",WeatherForcastBuffer.FIELDNO(Type),ValueType,RecordNo) THEN BEGIN
+          FoundValue := GetEntryValue(DataExch."Entry No.",DATABASE::"Weather Forcast Buffer",WeatherForcastBuffer.FIELDNO(Value),0,RecordNo);
+          EVALUATE(Result,FoundValue,9);
+        END;
+    END;
+
+    LOCAL PROCEDURE FindRecordNo@1207(DataExchEntryNo@1205 : Integer;FindTableId@1200 : Integer;FindFieldId@1202 : Integer;FindValue@1203 : Text;VAR RecordNo@1204 : Integer) Found : Boolean;
+    VAR
+      IntermediateDataImport@1201 : Record 1214;
+    BEGIN
+      WITH IntermediateDataImport DO BEGIN
+        SETRANGE("Data Exch. No.",DataExchEntryNo);
+        SETRANGE("Table ID",FindTableId);
+        SETRANGE("Field ID",FindFieldId);
+        SETFILTER(Value,FindValue);
+        IF FINDFIRST THEN BEGIN
+          RecordNo := "Record No.";
+          EXIT(TRUE);
+        END;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

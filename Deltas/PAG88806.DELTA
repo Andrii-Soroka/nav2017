@@ -1,0 +1,79 @@
+OBJECT Page 88806 Get Current Location
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.11.16;
+    Time=13:25:48;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    CaptionML=ENU=Online Map Location;
+    SaveValues=Yes;
+    InsertAllowed=No;
+    DeleteAllowed=No;
+    LinksAllowed=No;
+    PageType=Card;
+    ShowFilter=No;
+    OnOpenPage=BEGIN
+                 IF LocationProvider.IsAvailable THEN BEGIN
+                   LocationProvider := LocationProvider.Create;
+                   LocationProvider.RequestLocationAsync;
+                 END ELSE
+                   CurrPage.CAPTION := LocationNotAvailableMsg;
+               END;
+
+  }
+  CONTROLS
+  {
+    { 1900000001;;Container;
+                ContainerType=ContentArea }
+
+    { 1   ;1   ;Field     ;
+                CaptionML=ENU=Latitude;
+                ApplicationArea=#Basic,#Suite;
+                SourceExpr=Latitude;
+                Importance=Promoted }
+
+    { 2   ;1   ;Field     ;
+                CaptionML=ENU=Longitude;
+                SourceExpr=Longitude }
+
+  }
+  CODE
+  {
+    VAR
+      LocationProvider@1013 : DotNet "'Microsoft.Dynamics.Nav.ClientExtensions, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'.Microsoft.Dynamics.Nav.Client.Capabilities.LocationProvider" WITHEVENTS RUNONCLIENT;
+      GeolocationLbl@1003 : TextConst 'ENU=Searching for your location.';
+      LocationNotAvailableMsg@1005 : TextConst 'ENU=Your location cannot be determined.';
+      Latitude@1002 : Decimal;
+      Longitude@1001 : Decimal;
+
+    PROCEDURE GetLocation@1(VAR CurrentGeolocation@1000 : Record 806);
+    BEGIN
+      CurrentGeolocation.Latitude := Latitude;
+      CurrentGeolocation.Longitude := Longitude;
+    END;
+
+    EVENT LocationProvider@1013::LocationChanged@10(location@1000 : DotNet "'Microsoft.Dynamics.Nav.ClientExtensions, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'.Microsoft.Dynamics.Nav.Client.Capabilities.Location");
+    VAR
+      OnlineMapSetup@1002 : Record 800;
+      OnlineMapManagement@1001 : Codeunit 802;
+    BEGIN
+      IF location.Status <> 0 THEN BEGIN
+        MESSAGE(LocationNotAvailableMsg);
+        CurrPage.CLOSE;
+        EXIT;
+      END;
+
+      Latitude := location.Coordinate.Latitude;
+      Longitude := location.Coordinate.Longitude;
+      CurrPage.CLOSE;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

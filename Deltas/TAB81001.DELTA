@@ -1,0 +1,35 @@
+OBJECT Table 81001 Weather Forcast Buffer
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.11.16;
+    Time=14:26:24;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+  }
+  FIELDS
+  {
+    { 1   ;   ;Layout              ;Text250        }
+    { 2   ;   ;Units               ;Text250        }
+    { 3   ;   ;Type                ;Text250        }
+    { 4   ;   ;Name                ;Text250        }
+    { 5   ;   ;Value               ;Decimal        }
+  }
+  KEYS
+  {
+    {    ;Layout                                  ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

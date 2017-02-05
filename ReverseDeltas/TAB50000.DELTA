@@ -1,0 +1,21 @@
+OBJECT Modification "Weather Forcast Entry"(Table 50000)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Weather Forcast Entry"(Table 50000);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

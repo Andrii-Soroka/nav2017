@@ -1,0 +1,21 @@
+OBJECT Modification "Weather Forcast Management"(Codeunit 81000)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Weather Forcast Management"(Codeunit 81000);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

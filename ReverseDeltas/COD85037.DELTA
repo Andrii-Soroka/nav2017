@@ -1,0 +1,21 @@
+OBJECT Modification "Read Data Exch. from ExcelFile"(Codeunit 85037)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Read Data Exch. from ExcelFile"(Codeunit 85037);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

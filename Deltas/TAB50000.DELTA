@@ -1,0 +1,40 @@
+OBJECT Table 50000 Weather Forcast Entry
+{
+  OBJECT-PROPERTIES
+  {
+    Date=16.11.16;
+    Time=16:19:23;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    OnInsert=BEGIN
+               "Entry No." := 0;
+             END;
+
+  }
+  FIELDS
+  {
+    { 1   ;   ;Entry No.           ;Integer       ;AutoIncrement=Yes }
+    { 2   ;   ;Type                ;Text30         }
+    { 3   ;   ;Name                ;Text30         }
+    { 4   ;   ;Value               ;Decimal        }
+    { 6   ;   ;Data Exch. Entry No.;Integer       ;TableRelation="Data Exch." }
+  }
+  KEYS
+  {
+    {    ;Entry No.                               ;Clustered=Yes }
+    {    ;Data Exch. Entry No.                     }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

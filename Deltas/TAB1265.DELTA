@@ -1,0 +1,34 @@
+OBJECT Modification "Data Exch. Field Mapping Buf."(Table 1265)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.11.16;
+    Time=11:37:04;
+    Modified=Yes;
+    Version List=NAVW110.0,NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    Target="Data Exch. Field Mapping Buf."(Table 1265);
+  }
+  CHANGES
+  {
+    { Insertion         ;InsertAfter="Transformation Rule"(Field 23);
+                         ChangedElements=FieldCollection
+                         {
+                           { 85203;  ;Use Node Name as Value;Boolean      }
+                         }
+                          }
+    { PropertyModification;
+                         Property=Version List;
+                         OriginalValue=NAVW110.0;
+                         ModifiedValue=NAVW110.0,NAVTechDays2016 }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

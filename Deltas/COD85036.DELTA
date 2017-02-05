@@ -1,0 +1,111 @@
+OBJECT Codeunit 85036 Import XLSX File to Data Exch
+{
+  OBJECT-PROPERTIES
+  {
+    Date=28.05.16;
+    Time=08:25:29;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    TableNo=1220;
+    Permissions=TableData 1221=rimd;
+    OnRun=BEGIN
+            ReadFileContent(Rec);
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      ProgressWindow@10000202 : Dialog;
+      WindowOpen@10000201 : Boolean;
+      StartTime@10000200 : DateTime;
+      ImportBankStmtTxt@10000205 : TextConst 'ENU=Select a file to import;ISL=Velja skr† til a– flytja inn';
+      FileFilterTxt@10000204 : TextConst 'ENU="All Files(*.*)|*.*|XLS Files(*.xls)|*.xls|Text Files(*.txt;*.csv;*.xlsx)|*.txt;*.csv;*.xlsx";ISL="Allar skr†r(*.*)|*.*|XLS-skr†r(*.xls)|*.xls|Textaskr†r(*.txt;*.csv;*.xlsx)|*.txt;*.csv;*.xlsx"';
+      FileFilterExtensionTxt@10000203 : TextConst '@@@={Locked};ENU=txt,csv,xls,xlsx;ISL=txt,csv,xls,xlsx';
+
+    LOCAL PROCEDURE ReadFileContent@10000203(VAR DataExch@10000200 : Record 1220);
+    VAR
+      DataExchDef@10000202 : Record 1222;
+      DataExchLineDef@10000201 : Record 1227;
+      TempExcelBuffer@10000203 : TEMPORARY Record 370;
+    BEGIN
+      DataExchDef.GET(DataExch."Data Exch. Def Code");
+      DataExchLineDef.SETRANGE("Data Exch. Def Code",DataExchDef.Code);
+      DataExchLineDef.SETRANGE("Parent Code",'');
+      IF NOT DataExchLineDef.FINDSET THEN
+        EXIT;
+
+      ReadExcelDocument(TempExcelBuffer,ExportExcelDocumentToServer(DataExch),DataExchDef."Header Tag");
+      CopyExcelBufToDataExchField(DataExch,DataExchDef,DataExchLineDef,TempExcelBuffer);
+    END;
+
+    LOCAL PROCEDURE ExportExcelDocumentToServer@10000205(VAR DataExch@10000202 : Record 1220) ServerTempFileName : Text;
+    VAR
+      TempBlob@10000203 : Record 99008535;
+      FileMgt@10000201 : Codeunit 419;
+    BEGIN
+      TempBlob.Blob := DataExch."File Content";
+      ServerTempFileName := FileMgt.ServerTempFileName('xlsx');
+      FileMgt.BLOBExportToServerFile(TempBlob,ServerTempFileName);
+    END;
+
+    LOCAL PROCEDURE ReadExcelDocument@10000204(VAR TempExcelBuffer@10000200 : TEMPORARY Record 370;FileName@10000201 : Text;SheetName@10000203 : Text);
+    BEGIN
+      WITH TempExcelBuffer DO BEGIN
+        IF SheetName = '' THEN
+          SheetName := SelectSheetsName(FileName);
+        OpenBook(FileName,SheetName);
+        ReadSheet;
+      END;
+    END;
+
+    LOCAL PROCEDURE CopyExcelBufToDataExchField@10000209(DataExch@10000202 : Record 1220;DataExchDef@10000204 : Record 1222;DataExchLineDef@10000200 : Record 1227;VAR TempExcelBuffer@10000203 : TEMPORARY Record 370);
+    VAR
+      RowNo@10000206 : Integer;
+    BEGIN
+      WITH TempExcelBuffer DO
+        IF FINDLAST THEN
+          FOR RowNo := 1 TO "Row No." DO
+            ParseLine(DataExch,DataExchDef,DataExchLineDef,TempExcelBuffer,RowNo);
+    END;
+
+    LOCAL PROCEDURE ParseLine@10000214(DataExch@10000203 : Record 1220;DataExchDef@10000205 : Record 1222;DataExchLineDef@10000202 : Record 1227;VAR TempExcelBuffer@10000200 : TEMPORARY Record 370;RowNo@10000204 : Integer);
+    BEGIN
+      WITH TempExcelBuffer DO BEGIN
+        IF (RowNo <= DataExchDef."Header Lines") THEN
+          EXIT;
+        IF DataExchLineDef."Data Line Tag" <> '' THEN
+          IF NOT GET(RowNo,1) THEN
+            EXIT
+          ELSE IF STRPOS("Cell Value as Text",DataExchLineDef."Data Line Tag") <> 1 THEN
+            EXIT;
+        ParseColumns(DataExch,DataExchDef,DataExchLineDef,TempExcelBuffer,RowNo);
+      END;
+    END;
+
+    LOCAL PROCEDURE ParseColumns@10000200(DataExch@10000206 : Record 1220;DataExchDef@10000205 : Record 1222;DataExchLineDef@10000204 : Record 1227;VAR TempExcelBuffer@10000203 : TEMPORARY Record 370;RowNo@10000202 : Integer);
+    VAR
+      DataExchColumnDef@10000200 : Record 1223;
+      DataExchField@10000201 : Record 1221;
+    BEGIN
+      WITH TempExcelBuffer DO BEGIN
+        DataExchColumnDef.SETRANGE("Data Exch. Def Code",DataExchLineDef."Data Exch. Def Code");
+        DataExchColumnDef.SETRANGE("Data Exch. Line Def Code",DataExchLineDef.Code);
+        IF DataExchColumnDef.FINDSET THEN
+          REPEAT
+            IF GET(RowNo,DataExchColumnDef."Column No.") AND ("Cell Value as Text" <> '') THEN
+              DataExchField.InsertRecXMLField(DataExch."Entry No.",RowNo,"Column No.",'',"Cell Value as Text",DataExchLineDef.Code)
+            ELSE IF DataExchColumnDef.Constant <> '' THEN
+              DataExchField.InsertRecXMLField(DataExch."Entry No.",RowNo,DataExchColumnDef."Column No.",'',DataExchColumnDef.Constant,DataExchLineDef.Code);
+          UNTIL DataExchColumnDef.NEXT = 0;
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

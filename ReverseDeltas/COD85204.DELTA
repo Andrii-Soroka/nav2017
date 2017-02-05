@@ -1,0 +1,21 @@
+OBJECT Modification "Xml Node Name Support Mgt."(Codeunit 85204)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Xml Node Name Support Mgt."(Codeunit 85204);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

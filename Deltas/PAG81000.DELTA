@@ -1,0 +1,94 @@
+OBJECT Page 81000 Weather Forcast Request
+{
+  OBJECT-PROPERTIES
+  {
+    Date=15.11.16;
+    Time=14:14:21;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    SourceTable=Table81000;
+    PageType=List;
+    OnNewRecord=BEGIN
+                  IF BelowxRec THEN BEGIN
+                    Latitude := xRec.Latitude;
+                    Longitude := xRec.Longitude;
+                    IF xRec."Start Date & Time" <> 0DT THEN
+                      VALIDATE("Start Date & Time",xRec."Start Date & Time" + 86400000);
+                  END;
+                END;
+
+    ActionList=ACTIONS
+    {
+      { 5       ;    ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 6       ;1   ;Action    ;
+                      Name=Get Location;
+                      Promoted=Yes;
+                      PromotedIsBig=Yes;
+                      Image=Map;
+                      PromotedCategory=Process;
+                      Scope=Repeater;
+                      OnAction=BEGIN
+                                 GetLocation;
+                               END;
+                                }
+      { 9       ;1   ;Action    ;
+                      Name=Download Forcast;
+                      Promoted=Yes;
+                      PromotedIsBig=Yes;
+                      Image=DocInBrowser;
+                      PromotedCategory=Process;
+                      Scope=Repeater;
+                      OnAction=BEGIN
+                                 DownloadWeatherForcast;
+                                 CurrPage.UPDATE(FALSE);
+                               END;
+                                }
+      { 12      ;1   ;Action    ;
+                      Name=Export Source Document;
+                      Image=Export;
+                      OnAction=BEGIN
+                                 ExportSourceDocument;
+                               END;
+                                }
+    }
+  }
+  CONTROLS
+  {
+    { 1   ;0   ;Container ;
+                ContainerType=ContentArea }
+
+    { 2   ;1   ;Group     ;
+                Name=Group;
+                GroupType=Repeater }
+
+    { 3   ;2   ;Field     ;
+                SourceExpr="Start Date & Time" }
+
+    { 4   ;2   ;Field     ;
+                SourceExpr="End Date & Time" }
+
+    { 7   ;2   ;Field     ;
+                SourceExpr=Latitude }
+
+    { 8   ;2   ;Field     ;
+                SourceExpr=Longitude }
+
+    { 10  ;2   ;Field     ;
+                SourceExpr=Minimum }
+
+    { 11  ;2   ;Field     ;
+                SourceExpr=Maximum }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

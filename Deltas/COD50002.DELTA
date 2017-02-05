@@ -1,0 +1,130 @@
+OBJECT Codeunit 50002 Map Intermediate - Generic
+{
+  OBJECT-PROPERTIES
+  {
+    Date=16.11.16;
+    Time=16:27:13;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    TableNo=1220;
+    OnRun=VAR
+            Arguments@1000 : Record 81002;
+          BEGIN
+            ProcessAllMappings(Rec);
+          END;
+
+  }
+  CODE
+  {
+
+    LOCAL PROCEDURE ProcessAllMappings@1(DataExch@1000 : Record 1220);
+    VAR
+      DataExchFieldMapping@1001 : Record 1225;
+    BEGIN
+      WITH DataExchFieldMapping DO BEGIN
+        SETRANGE("Data Exch. Def Code",DataExch."Data Exch. Def Code");
+        SETRANGE("Data Exch. Line Def Code",DataExch."Data Exch. Line Def Code");
+        SETFILTER("Target Table ID",'>%1',0);
+        SETCURRENTKEY("Target Table ID");
+        IF FINDFIRST THEN REPEAT
+          SETRANGE("Target Table ID","Target Table ID");
+          ProcessLines(DataExch,"Target Table ID",0,LookupDataExchFieldNo("Data Exch. Def Code","Data Exch. Line Def Code"));
+          FINDLAST;
+          SETFILTER("Target Table ID",'>%1',0);
+        UNTIL NEXT = 0;
+      END;
+    END;
+
+    LOCAL PROCEDURE ProcessLines@3(DataExch@1000 : Record 1220;TableId@1003 : Integer;ParentRecordNo@1001 : Integer;DataExchEntryNoFieldNo@1004 : Integer);
+    VAR
+      IntermediateDataImport@1002 : Record 1214;
+      RecRef@1006 : RecordRef;
+      CurrRecordNo@1005 : Integer;
+    BEGIN
+      CurrRecordNo := -1;
+
+      WITH IntermediateDataImport DO BEGIN
+        SETRANGE("Data Exch. No.",DataExch."Entry No.");
+        SETRANGE("Table ID",TableId);
+        SETRANGE("Parent Record No.",ParentRecordNo);
+        SETCURRENTKEY("Record No.");
+
+        IF NOT FINDSET THEN
+          EXIT;
+
+        REPEAT
+          IF CurrRecordNo <> "Record No." THEN BEGIN // new record
+            IF CurrRecordNo <> -1 THEN BEGIN  // if not start of loop then save current rec
+              RecRef.MODIFY(TRUE);
+              RecRef.CLOSE;
+            END;
+
+            CurrRecordNo := "Record No.";
+            RecRef.OPEN("Table ID");
+            RecRef.INIT;
+            IF DataExchEntryNoFieldNo > 0 THEN
+              ProcessField(RecRef,DataExchEntryNoFieldNo,FORMAT("Data Exch. No.",0,9));
+            RecRef.INSERT(TRUE);
+          END;
+
+          IF NOT "Validate Only" THEN
+            IF Value <> '' THEN
+              ProcessField(RecRef,"Field ID",Value);
+        UNTIL NEXT = 0;
+
+        // Save the last rec
+        IF CurrRecordNo <> -1 THEN BEGIN
+          RecRef.MODIFY(TRUE);
+          RecRef.CLOSE;
+        END;
+      END;
+    END;
+
+    LOCAL PROCEDURE LookupDataExchFieldNo@4(DataExchDefCode@1000 : Code[20];DataExchLineDefCode@1001 : Code[20]) : Integer;
+    VAR
+      DataExchMapping@1002 : Record 1224;
+    BEGIN
+      WITH DataExchMapping DO BEGIN
+        SETRANGE("Data Exch. Def Code",DataExchDefCode);
+        SETRANGE("Data Exch. Line Def Code",DataExchLineDefCode);
+        SETRANGE("Use as Intermediate Table",TRUE);
+        IF FINDFIRST THEN EXIT("Data Exch. No. Field ID");
+      END;
+    END;
+
+    LOCAL PROCEDURE ProcessField@58(RecRef@1000 : RecordRef;FieldNo@1004 : Integer;Value@1002 : Text[250]);
+    VAR
+      FieldRef@1001 : FieldRef;
+    BEGIN
+      FieldRef := RecRef.FIELD(FieldNo);
+      SetFieldValue(FieldRef,Value);
+    END;
+
+    LOCAL PROCEDURE SetFieldValue@7(VAR FieldRef@1000 : FieldRef;Value@1001 : Text[250]);
+    VAR
+      ConfigValidateManagement@1004 : Codeunit 8617;
+      ErrorText@1002 : Text;
+    BEGIN
+      TruncateValueToFieldLength(FieldRef,Value);
+      ErrorText := ConfigValidateManagement.EvaluateValueWithValidate(FieldRef,Value,TRUE);
+      IF ErrorText <> '' THEN
+        ERROR(ErrorText);
+    END;
+
+    LOCAL PROCEDURE TruncateValueToFieldLength@32(FieldRef@1001 : FieldRef;VAR Value@1000 : Text[250]);
+    VAR
+      Field@1002 : Record 2000000041;
+    BEGIN
+      EVALUATE(Field.Type,FORMAT(FieldRef.TYPE));
+      IF Field.Type IN [Field.Type::Code,Field.Type::Text] THEN
+        Value := COPYSTR(Value,1,FieldRef.LENGTH);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

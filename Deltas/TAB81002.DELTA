@@ -1,0 +1,34 @@
+OBJECT Table 81002 Download Arguments Table
+{
+  OBJECT-PROPERTIES
+  {
+    Date=16.11.16;
+    Time=13:30:28;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+  }
+  FIELDS
+  {
+    { 1   ;   ;ID                  ;GUID           }
+    { 2   ;   ;Url                 ;Text250        }
+    { 3   ;   ;Content             ;BLOB           }
+    { 11  ;   ;Related Record      ;RecordID      ;CaptionML=ENU=Related Record }
+  }
+  KEYS
+  {
+    {    ;ID                                      ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

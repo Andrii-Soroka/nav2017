@@ -1,0 +1,58 @@
+OBJECT Codeunit 81002 Fahrenheit to Celsius
+{
+  OBJECT-PROPERTIES
+  {
+    Date=11.11.16;
+    Time=14:59:53;
+    Modified=Yes;
+    Version List=NAVTechDays2016;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      FahrenheitToCelsiusDescTxt@1001 : TextConst 'ENU=Fahrenheit to Celsius';
+      FahrenheitToCelsiusTxt@1000 : TextConst '@@@={Locked};ENU=FAHRENHEIT_CELSIUS';
+
+    [EventSubscriber(Table,1237,OnTransformation)]
+    LOCAL PROCEDURE TransformFahrenheitToCelsiusOnTransformation@2(TransformationCode@1000 : Code[20];InputText@1001 : Text;VAR OutputText@1002 : Text);
+    BEGIN
+      IF TransformationCode <> GetFahrenheitToCelsiusCode THEN
+        EXIT;
+      OutputText := FahrenheitToCelsius(InputText);
+    END;
+
+    [EventSubscriber(Table,1237,OnCreateTransformationRules)]
+    LOCAL PROCEDURE InsertFahrenheitToCelsiusOnCreateTransformationRules@3();
+    VAR
+      TransformationRule@1000 : Record 1237;
+    BEGIN
+      TransformationRule.InsertRec(
+        GetFahrenheitToCelsiusCode,FahrenheitToCelsiusDescTxt,TransformationRule."Transformation Type"::Custom,0,0,'','');
+    END;
+
+    LOCAL PROCEDURE FahrenheitToCelsius@19(OldValue@1003 : Text) NewValue : Text;
+    VAR
+      Fahrenheit@1000 : Decimal;
+      Celsius@1002 : Decimal;
+    BEGIN
+      IF NOT EVALUATE(Fahrenheit,OldValue,9) THEN EXIT('');
+      Celsius := ROUND((Fahrenheit - 32) * 5/9,0.5);
+      NewValue := FORMAT(Celsius,0,9);
+    END;
+
+    PROCEDURE GetFahrenheitToCelsiusCode@24() : Code[20];
+    BEGIN
+      EXIT(FahrenheitToCelsiusTxt);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

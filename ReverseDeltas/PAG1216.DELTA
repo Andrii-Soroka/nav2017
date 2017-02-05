@@ -1,0 +1,35 @@
+OBJECT Modification "Data Exch Col Def Part"(Page 1216)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=25.10.16;
+    Time=12:00:00;
+    Version List=NAVW110.0;
+  }
+  PROPERTIES
+  {
+    Target="Data Exch Col Def Part"(Page 1216);
+  }
+  CHANGES
+  {
+    { Deletion          ;Target=Control 18;
+                         ChangedElements=ControlCollection
+                         {
+                           { 18  ;2   ;Field     ;
+                                       SourceExpr="Use Node Name as Value" }
+
+                         }
+                          }
+    { PropertyModification;
+                         Property=Version List;
+                         OriginalValue=NAVW110.0,NAVTechDays2016;
+                         ModifiedValue=NAVW110.0 }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+
