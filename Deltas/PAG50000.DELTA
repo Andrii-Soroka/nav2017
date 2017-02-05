@@ -1,0 +1,145 @@
+OBJECT Page 50000 Object Renumbering
+{
+  OBJECT-PROPERTIES
+  {
+    Date=02.02.17;
+    Time=09:29:38;
+    Version List=DYRN10.00.1130;
+  }
+  PROPERTIES
+  {
+    CaptionML=ENU=Object Renumbering;
+    SaveValues=Yes;
+    SourceTable=Table50000;
+    PageType=List;
+    ActionList=ACTIONS
+    {
+      { 1100408005;  ;ActionContainer;
+                      ActionContainerType=ActionItems }
+      { 1100408006;1 ;Action    ;
+                      Name=Read Object Lines;
+                      CaptionML=ENU=Read Object Lines;
+                      ToolTipML=ENU=Creates renumbering lines base on the objects in the selected object file;
+                      Promoted=Yes;
+                      Image=Import;
+                      PromotedCategory=Process;
+                      OnAction=BEGIN
+                                 LoadObjectDataIntoSetup;
+                               END;
+                                }
+      { 1100408010;1 ;Action    ;
+                      Name=Suggest IDs;
+                      CaptionML=ENU=Suggest IDs;
+                      ToolTipML=ENU=Suggest new object numbers in the range from 50.000 based on the available objects in the current license;
+                      Promoted=Yes;
+                      Image=Suggest;
+                      PromotedCategory=Process;
+                      OnAction=BEGIN
+                                 SuggestIDsFromPermissionRange;
+                               END;
+                                }
+      { 1100408007;1 ;Action    ;
+                      Name=Read from Excel;
+                      CaptionML=ENU=Read from Excel;
+                      ToolTipML=ENU=Reads object renumbering lines from Excel Sheet created with the Write to Excel process;
+                      Promoted=Yes;
+                      Image=Excel;
+                      PromotedCategory=Process;
+                      OnAction=BEGIN
+                                 ImportSetupFromExcel;
+                               END;
+                                }
+      { 1100408008;1 ;Action    ;
+                      Name=Write to Excel;
+                      CaptionML=ENU=Write to Excel;
+                      ToolTipML=ENU=Writes current renumbering lines to a new Excel Sheet to me managed within Excel and reread into the renumbering lines;
+                      Promoted=Yes;
+                      Image=Excel;
+                      PromotedCategory=Process;
+                      OnAction=BEGIN
+                                 ExportSetupToExcel;
+                               END;
+                                }
+      { 1100408009;1 ;Action    ;
+                      Name=Renumber Using Lines;
+                      CaptionML=ENU=Renumber Using Lines;
+                      ToolTipML=ENU=Prompts for a file to read and for a new file to save with renumbered objects based on the rules in the renumbering lines;
+                      Promoted=Yes;
+                      Image=ReOpen;
+                      PromotedCategory=Process;
+                      OnAction=VAR
+                                 TempRenumberingSetup@1001 : TEMPORARY Record 50000;
+                                 RenumberingSetup@1000 : Record 50000;
+                               BEGIN
+                                 CopyToTemp(RenumberingSetup,TempRenumberingSetup);
+                                 ReplaceObjectDataContentByRenumberingLines(TempRenumberingSetup);
+                               END;
+                                }
+      { 6       ;1   ;Action    ;
+                      Name=Renumber Using Controls;
+                      CaptionML=ENU=Renumber Using Controls;
+                      ToolTipML=ENU=Prompts for a file to read and for a new file to save with renumbered objects based on the rules in the control IDs setup;
+                      Promoted=Yes;
+                      Image=ReOpen;
+                      PromotedCategory=Process;
+                      OnAction=BEGIN
+                                 ReplaceObjectDataContentByControlIDs(ControlStartRange,ControlEndRange,ControlNewStartRange);
+                               END;
+                                }
+    }
+  }
+  CONTROLS
+  {
+    { 1100408000;0;Container;
+                ContainerType=ContentArea }
+
+    { 5   ;1   ;Group     ;
+                CaptionML=ENU=Using Renumbering Lines;
+                GroupType=Group }
+
+    { 1100408001;2;Group  ;
+                Name=Group;
+                GroupType=Repeater }
+
+    { 1100408002;3;Field  ;
+                SourceExpr="Source Type" }
+
+    { 1100408003;3;Field  ;
+                SourceExpr="Source ID" }
+
+    { 1100408004;3;Field  ;
+                SourceExpr="Destination ID" }
+
+    { 4   ;1   ;Group     ;
+                Name=Controls;
+                CaptionML=ENU=Using Control IDs;
+                GroupType=Group }
+
+    { 3   ;2   ;Field     ;
+                CaptionML=ENU=Control Start Range;
+                SourceExpr=ControlStartRange }
+
+    { 2   ;2   ;Field     ;
+                CaptionML=ENU=Control End Range;
+                SourceExpr=ControlEndRange }
+
+    { 1   ;2   ;Field     ;
+                CaptionML=ENU=Control New Start Range;
+                SourceExpr=ControlNewStartRange }
+
+  }
+  CODE
+  {
+    VAR
+      ControlStartRange@1000 : Integer;
+      ControlEndRange@1001 : Integer;
+      ControlNewStartRange@1002 : Integer;
+
+    BEGIN
+    {
+      http://www.dynamics.is/wp-admin/post.php?post=2064
+    }
+    END.
+  }
+}
+

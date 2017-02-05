@@ -1,0 +1,27 @@
+OBJECT MenuSuite 1059 Dept - Add-on 9
+{
+  OBJECT-PROPERTIES
+  {
+    Date=26.04.16;
+    Time=22:52:31;
+    Version List=DYRN9.00;
+  }
+  PROPERTIES
+  {
+  }
+  MENUNODES
+  {
+    {                ;[{7234476B-98CB-47D4-BABA-CA8ED3D7CD56}] ;NextNodeID=[{159A20B7-DB9A-4BC4-81D9-5F7961C34217}] }
+    { MenuItem       ;[{159A20B7-DB9A-4BC4-81D9-5F7961C34217}] ;Name=Object Renumbering;
+                                                                CaptionML=[ENU=Object Renumbering;
+                                                                           ISL=Endurn£mering forritshluta];
+                                                                MemberOfMenu=[{19A352FE-D90D-424E-B85F-CF3B8E98CF0E}];
+                                                                RunObjectType=Page;
+                                                                RunObjectID=50000;
+                                                                ParentNodeID=[{0179BFD5-90F4-4EC1-A29D-3C0A571F8EB2}];
+                                                                Visible=Yes;
+                                                                NextNodeID=[{5881C68C-F1F7-47BA-8ED5-02D8149B2599}];
+                                                                DepartmentCategory=Tasks }
+  }
+}
+

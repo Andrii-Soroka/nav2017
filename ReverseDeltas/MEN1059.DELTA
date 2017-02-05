@@ -1,0 +1,21 @@
+OBJECT Modification "Dept - Add-on 9"(MenuSuite 1059)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=;
+    Time=;
+    Version List=;
+  }
+  PROPERTIES
+  {
+    Target="Dept - Add-on 9"(MenuSuite 1059);
+    ChangeType=Deletion;
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+
