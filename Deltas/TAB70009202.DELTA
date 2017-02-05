@@ -1,0 +1,242 @@
+OBJECT Table 70009202 G/L Source Name Help Resource
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.12.16;
+    Time=12:00:00;
+    Version List=GLSN10.0;
+  }
+  PROPERTIES
+  {
+    Permissions=TableData 70009202=im;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Code                ;Code50        ;CaptionML=ENU=Code }
+    { 2   ;   ;Url                 ;Text250       ;ExtendedDatatype=URL;
+                                                   CaptionML=ENU=Url }
+    { 3   ;   ;Icon                ;Media         ;CaptionML=ENU=Icon }
+  }
+  KEYS
+  {
+    {    ;Code                                    ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    PROCEDURE InitializeResources@1000000001();
+    BEGIN
+      InitAssistedSetupHelpPageUrl;
+      InitAssistedSetupEmbedVideoUrl;
+      InitUsageHelpEmbedVideoUrl;
+      InitUsageHelpPageUrl;
+      InitIcon70x70;
+      InitIcon150x150;
+      InitIcon240x240;
+      InitIcon250x250;
+      InitIcon417x417;
+    END;
+
+    PROCEDURE GetUrl@1000000012(SetupCode@1000000000 : Code[50]) : Text;
+    BEGIN
+      IF GET(SetupCode) THEN
+        EXIT(Url);
+    END;
+
+    PROCEDURE GetMediaFile@1000000010(SetupCode@1000000000 : Code[50];VAR TempFileName@1000000002 : Text) : Boolean;
+    VAR
+      FileMgt@1000000001 : Codeunit 419;
+    BEGIN
+      IF GET(SetupCode) THEN
+        IF Icon.HASVALUE THEN BEGIN
+          TempFileName := FileMgt.CombinePath(TEMPORARYPATH,Code + '.png');
+          IF EXISTS(TempFileName) THEN
+            ERASE(TempFileName);
+          Icon.EXPORTFILE(TempFileName);
+          IF FileMgt.ServerFileExists(TempFileName) THEN
+            EXIT(TRUE);
+        END;
+    END;
+
+    PROCEDURE StartVideo@22(SetupCode@70009201 : Code[50]);
+    VAR
+      VideoLink@70009200 : Page 1821;
+      ClientTypeMgt@70009202 : Codeunit 4;
+    BEGIN
+      IF ClientTypeMgt.IsCommonWebClientType THEN BEGIN
+        VideoLink.SetURL(GetUrl(SetupCode));
+        VideoLink.RUNMODAL;
+      END ELSE
+        HYPERLINK(GetUrl(SetupCode));
+    END;
+
+    PROCEDURE GetSetupHelpCode@1000000000() : Code[50];
+    VAR
+      SetupHelpCode@1000000000 : TextConst 'ENU=SETUPHELP';
+    BEGIN
+      EXIT(SetupHelpCode);
+    END;
+
+    PROCEDURE GetSetupVideoCode@1000000006() : Code[50];
+    VAR
+      SetupVideoCode@1000000000 : TextConst 'ENU=SETUPVIDEO';
+    BEGIN
+      EXIT(SetupVideoCode);
+    END;
+
+    PROCEDURE GetUsageHelpCode@1000000007() : Code[50];
+    VAR
+      UsageHelpCode@1000000000 : TextConst 'ENU=USAGEHELP';
+    BEGIN
+      EXIT(UsageHelpCode);
+    END;
+
+    PROCEDURE GetUsageVideoCode@1000000008() : Code[50];
+    VAR
+      UsageVideoCode@1000000000 : TextConst 'ENU=USAGEVIDEO';
+    BEGIN
+      EXIT(UsageVideoCode);
+    END;
+
+    PROCEDURE Get70PXIconCode@1000000011() : Code[50];
+    VAR
+      IconCode@1000000000 : TextConst 'ENU=GLSOURCENAMES_70PXICON';
+    BEGIN
+      EXIT(IconCode)
+    END;
+
+    PROCEDURE Get150PXIconCode@1000000018() : Code[50];
+    VAR
+      IconCode@1000000000 : TextConst 'ENU=GLSOURCENAMES_150PXICON';
+    BEGIN
+      EXIT(IconCode)
+    END;
+
+    PROCEDURE Get240PXIconCode@1000000019() : Code[50];
+    VAR
+      IconCode@1000000000 : TextConst 'ENU=GLSOURCENAMES_240PXICON';
+    BEGIN
+      EXIT(IconCode)
+    END;
+
+    PROCEDURE Get250PXIconCode@1000000020() : Code[50];
+    VAR
+      IconCode@1000000000 : TextConst 'ENU=GLSOURCENAMES_250PXICON';
+    BEGIN
+      EXIT(IconCode)
+    END;
+
+    PROCEDURE Get417PXIconCode@1000000021() : Code[50];
+    VAR
+      IconCode@1000000000 : TextConst 'ENU=GLSOURCENAMES_417PXICON';
+    BEGIN
+      EXIT(IconCode)
+    END;
+
+    LOCAL PROCEDURE InitAssistedSetupHelpPageUrl@1000000002();
+    VAR
+      SetupHelpUrl@1000000002 : TextConst 'ENU=http://Objects4NAV.com/GLSourceNames';
+    BEGIN
+      InitUrl(GetSetupHelpCode,SetupHelpUrl);
+    END;
+
+    LOCAL PROCEDURE InitAssistedSetupEmbedVideoUrl@1000000003();
+    VAR
+      SetupVideoUrl@1000000001 : TextConst 'ENU=https://www.youtube.com/embed/TYo1ZJ5jizs';
+    BEGIN
+      InitUrl(GetSetupVideoCode,SetupVideoUrl);
+    END;
+
+    LOCAL PROCEDURE InitUsageHelpPageUrl@1000000004();
+    VAR
+      UsageHelpUrl@1000000001 : TextConst 'ENU=http://Objects4NAV.com/GLSourceNames';
+    BEGIN
+      InitUrl(GetUsageHelpCode,UsageHelpUrl);
+    END;
+
+    LOCAL PROCEDURE InitUsageHelpEmbedVideoUrl@1000000005();
+    VAR
+      UsageVideoUrl@1000000001 : TextConst 'ENU=https://www.youtube.com/embed/Xj5TATt7Pns';
+    BEGIN
+      InitUrl(GetUsageVideoCode,UsageVideoUrl);
+    END;
+
+    LOCAL PROCEDURE InitIcon70x70@1000000013();
+    VAR
+      TempBlob@1000000000 : Record 99008535;
+      IconDescription@1000000001 : TextConst 'ENU=G/L Source Name Icon 70x70';
+    BEGIN
+      CODEUNIT.RUN(CODEUNIT::"G/L Source Name Icon 70x70",TempBlob);
+      InitIcon(Get70PXIconCode,IconDescription,TempBlob);
+    END;
+
+    LOCAL PROCEDURE InitIcon150x150@1000000023();
+    VAR
+      TempBlob@1000000000 : Record 99008535;
+      IconDescription@1000000001 : TextConst 'ENU=G/L Source Name Icon 150x150';
+    BEGIN
+      CODEUNIT.RUN(CODEUNIT::"G/L Source Name Icon 150x150",TempBlob);
+      InitIcon(Get150PXIconCode,IconDescription,TempBlob);
+    END;
+
+    LOCAL PROCEDURE InitIcon240x240@1000000024();
+    VAR
+      TempBlob@1000000000 : Record 99008535;
+      IconDescription@1000000001 : TextConst 'ENU=G/L Source Name Icon 240x240';
+    BEGIN
+      CODEUNIT.RUN(CODEUNIT::"G/L Source Name Icon 240x240",TempBlob);
+      InitIcon(Get70PXIconCode,IconDescription,TempBlob);
+    END;
+
+    LOCAL PROCEDURE InitIcon250x250@1000000025();
+    VAR
+      TempBlob@1000000000 : Record 99008535;
+      IconDescription@1000000001 : TextConst 'ENU=G/L Source Name Icon 250x250';
+    BEGIN
+      CODEUNIT.RUN(CODEUNIT::"G/L Source Name Icon 250x250",TempBlob);
+      InitIcon(Get250PXIconCode,IconDescription,TempBlob);
+    END;
+
+    LOCAL PROCEDURE InitIcon417x417@1000000026();
+    VAR
+      TempBlob@1000000000 : Record 99008535;
+      IconDescription@1000000001 : TextConst 'ENU=G/L Source Name Icon 417x417';
+    BEGIN
+      CODEUNIT.RUN(CODEUNIT::"G/L Source Name Icon 417x417",TempBlob);
+      InitIcon(Get417PXIconCode,IconDescription,TempBlob);
+    END;
+
+    LOCAL PROCEDURE InitUrl@1000000009(UrlCode@1000000000 : Code[50];UrlLink@1000000001 : Text);
+    VAR
+      GLSourceNameHelpResource@1000000002 : Record 70009202;
+    BEGIN
+      WITH GLSourceNameHelpResource DO
+        IF NOT GET(UrlCode) THEN BEGIN
+          Code := UrlCode;
+          Url := UrlLink;
+          INSERT;
+        END;
+    END;
+
+    LOCAL PROCEDURE InitIcon@1000000014(IconCode@1000000001 : Code[50];IconDescription@1000000005 : Text;TempBlob@1000000000 : Record 99008535);
+    VAR
+      GLSourceNameHelpResource@1000000002 : Record 70009202;
+      InStr@1000000003 : InStream;
+    BEGIN
+      WITH GLSourceNameHelpResource DO
+        IF NOT GET(IconCode) THEN BEGIN
+          Code := IconCode;
+          TempBlob.Blob.CREATEINSTREAM(InStr);
+          Icon.IMPORTSTREAM(InStr,IconDescription,'image/png');
+          INSERT;
+        END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

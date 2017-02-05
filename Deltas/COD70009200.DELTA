@@ -1,0 +1,74 @@
+OBJECT Codeunit 70009200 G/L Source Name App Mgt.
+{
+  OBJECT-PROPERTIES
+  {
+    Date=10.01.17;
+    Time=16:38:12;
+    Version List=GLSN10.0;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      PermissionSetToSetupGLSourceNames@70009200 : TextConst 'ENU=G/L-SOURCE NAMES, S';
+
+    PROCEDURE GetAppId@1000000000() : Text;
+    BEGIN
+      EXIT('479e77f3-031a-49fe-bb6a-314464c6a9a8');
+    END;
+
+    PROCEDURE OnNavAppUpgradePerDatabase@1();
+    BEGIN
+      AddUserAccess;
+    END;
+
+    PROCEDURE OnNavAppUpgradePerCompany@2();
+    BEGIN
+      NAVAPP.RESTOREARCHIVEDATA(DATABASE::"G/L Source Name Setup");
+      NAVAPP.DELETEARCHIVEDATA(DATABASE::"G/L Source Name");
+
+      NAVAPP.DELETEARCHIVEDATA(DATABASE::"G/L Source Name Help Resource");
+      NAVAPP.DELETEARCHIVEDATA(DATABASE::"G/L Source Name User Access");
+      NAVAPP.DELETEARCHIVEDATA(DATABASE::"G/L Source Name Group Access");
+
+      RemoveAssistedSetup;
+    END;
+
+    LOCAL PROCEDURE RemoveAssistedSetup@1000000001();
+    VAR
+      AssistedSetup@1000000000 : Record 1803;
+    BEGIN
+      WITH AssistedSetup DO BEGIN
+        SETRANGE("Page ID",PAGE::"G/L Source Name Setup Wizard");
+        IF NOT ISEMPTY THEN
+          DELETEALL;
+      END;
+    END;
+
+    LOCAL PROCEDURE AddUserAccess@1000000010();
+    VAR
+      AccessControl@1000000002 : Record 2000000053;
+      AppGuid@1000000004 : GUID;
+    BEGIN
+      EVALUATE(AppGuid,GetAppId);
+      WITH AccessControl DO BEGIN
+        INIT;
+        "User Security ID" := USERSECURITYID;
+        "App ID" := AppGuid;
+        Scope := Scope::Tenant;
+        "Role ID" := PermissionSetToSetupGLSourceNames;
+        IF NOT FIND THEN
+          INSERT(TRUE);
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

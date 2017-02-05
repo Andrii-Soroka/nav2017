@@ -1,0 +1,34 @@
+<PermissionSets>
+  <PermissionSet RoleID="G/L-SOURCE NAMES" RoleName="Read G/L Source Names">
+    <Permission>
+      <ObjectType>0</ObjectType>
+      <ObjectID>70009200</ObjectID>
+      <ReadPermission>1</ReadPermission>
+      <InsertPermission>0</InsertPermission>
+      <ModifyPermission>0</ModifyPermission>
+      <DeletePermission>0</DeletePermission>
+      <ExecutePermission>0</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>0</ObjectType>
+      <ObjectID>70009201</ObjectID>
+      <ReadPermission>1</ReadPermission>
+      <InsertPermission>0</InsertPermission>
+      <ModifyPermission>0</ModifyPermission>
+      <DeletePermission>0</DeletePermission>
+      <ExecutePermission>0</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+    <Permission>
+      <ObjectType>0</ObjectType>
+      <ObjectID>70009202</ObjectID>
+      <ReadPermission>1</ReadPermission>
+      <InsertPermission>2</InsertPermission>
+      <ModifyPermission>2</ModifyPermission>
+      <DeletePermission>0</DeletePermission>
+      <ExecutePermission>0</ExecutePermission>
+      <SecurityFilter />
+    </Permission>
+  </PermissionSet>
+</PermissionSets>

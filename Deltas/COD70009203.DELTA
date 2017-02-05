@@ -1,0 +1,46 @@
+OBJECT Codeunit 70009203 G/L Source Name Vend Upd.
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.12.16;
+    Time=12:00:00;
+    Version List=GLSN10.0;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      GLSourceNamesMgt@70013401 : Codeunit 70009201;
+      SourceType@70013400 : ' ,Customer,Vendor,Bank Account,Fixed Asset';
+
+    [EventSubscriber(Table,23,OnAfterInsertEvent,"",Skip)]
+    LOCAL PROCEDURE UpdateSourceNameOnVendorInsert@1027(VAR Rec@1020 : Record 23;RunTrigger@1021 : Boolean);
+    BEGIN
+      IF Rec.ISTEMPORARY THEN EXIT;
+      GLSourceNamesMgt.AddSource(SourceType::Vendor,Rec."No.",Rec.Name);
+    END;
+
+    [EventSubscriber(Table,23,OnAfterDeleteEvent,"",Skip)]
+    LOCAL PROCEDURE UpdateSourceNameOnVendorDelete@1026(VAR Rec@1020 : Record 23;RunTrigger@1021 : Boolean);
+    BEGIN
+      IF Rec.ISTEMPORARY THEN EXIT;
+      GLSourceNamesMgt.RemoveSource(SourceType::Vendor,Rec."No.");
+    END;
+
+    [EventSubscriber(Table,23,OnAfterModifyEvent,"",Skip)]
+    LOCAL PROCEDURE UpdateSourceNameOnVendorModify@1025(VAR Rec@1020 : Record 23;VAR xRec@1021 : Record 23;RunTrigger@1022 : Boolean);
+    BEGIN
+      IF Rec.ISTEMPORARY THEN EXIT;
+      GLSourceNamesMgt.UpdateSource(SourceType::Vendor,Rec."No.",Rec.Name);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

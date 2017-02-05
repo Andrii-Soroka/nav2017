@@ -1,0 +1,82 @@
+OBJECT Page 70009203 G/L Source Name Users ListPart
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.12.16;
+    Time=12:00:00;
+    Version List=GLSN10.0;
+  }
+  PROPERTIES
+  {
+    InsertAllowed=No;
+    DeleteAllowed=No;
+    LinksAllowed=No;
+    SourceTable=Table70009203;
+    PageType=ListPart;
+    SourceTableTemporary=Yes;
+    OnAfterGetCurrRecord=BEGIN
+                           HasPermission := "Has Permission";
+                         END;
+
+  }
+  CONTROLS
+  {
+    { 1000000000;0;Container;
+                ContainerType=ContentArea }
+
+    { 1000000001;1;Group  ;
+                Name=Group;
+                GroupType=Repeater }
+
+    { 1000000002;2;Field  ;
+                ToolTipML=ENU=Indicates whether the user has full access or just read access to G/L Source Names Lookup table;
+                SourceExpr="Permission Level";
+                Visible=FALSE;
+                Editable=FALSE }
+
+    { 1000000003;2;Field  ;
+                SourceExpr="User Name";
+                Visible=FALSE;
+                Editable=FALSE }
+
+    { 1000000004;2;Field  ;
+                SourceExpr="User Full Name";
+                Editable=FALSE }
+
+    { 1000000005;2;Field  ;
+                CaptionML=ENU=User Group Member;
+                ToolTipML=ENU=Indicates if this user is a member of a user group in one of the previous steps.;
+                SourceExpr="Access Via User Group Code" <> '';
+                Editable=FALSE }
+
+    { 1000000006;2;Field  ;
+                ToolTipML=ENU=Indicates whether the user already has required permissions;
+                SourceExpr="Has Permission";
+                Editable=FALSE }
+
+    { 1000000007;2;Field  ;
+                ToolTipML=ENU=This will assign the required permission to this user when the wizard completes.;
+                SourceExpr="Assign Permission";
+                Editable=NOT HasPermission }
+
+    { 1000000008;2;Field  ;
+                ToolTipML=ENU=This will remove current permission from this user when the wizard completes.;
+                SourceExpr="Remove Permission";
+                Editable=HasPermission }
+
+  }
+  CODE
+  {
+    VAR
+      HasPermission@1000000000 : Boolean;
+
+    PROCEDURE Set@1000000001(VAR TempUserAccess@1000000000 : TEMPORARY Record 70009203);
+    BEGIN
+      COPY(TempUserAccess,TRUE);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

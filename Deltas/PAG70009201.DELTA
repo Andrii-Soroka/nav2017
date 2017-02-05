@@ -1,0 +1,50 @@
+OBJECT Page 70009201 G/L Source Name Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.12.16;
+    Time=12:00:00;
+    Version List=GLSN10.0;
+  }
+  PROPERTIES
+  {
+    CaptionML=ENU=G/L Source Name Setup;
+    InsertAllowed=No;
+    DeleteAllowed=No;
+    SourceTable=Table70009201;
+    PageType=Card;
+    OnOpenPage=BEGIN
+                 IF ISEMPTY THEN BEGIN
+                   INIT;
+                   INSERT;
+                 END;
+               END;
+
+  }
+  CONTROLS
+  {
+    { 1000000000;0;Container;
+                ContainerType=ContentArea }
+
+    { 1000000001;1;Group  ;
+                Name=General;
+                GroupType=Group }
+
+    { 1000000002;2;Field  ;
+                ToolTipML=ENU=The G/L Source Name Extension will be registered on this E-Mail Address.  When registering the registration key will be sent to this E-Mail Address.;
+                SourceExpr="Registration E-Mail Address";
+                ShowMandatory=TRUE }
+
+    { 1000000003;2;Field  ;
+                SourceExpr="Next Registration Verification";
+                Editable=FALSE }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

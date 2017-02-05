@@ -1,0 +1,42 @@
+OBJECT Table 70009204 G/L Source Name Group Access
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.12.16;
+    Time=12:00:00;
+    Version List=GLSN10.0;
+  }
+  PROPERTIES
+  {
+  }
+  FIELDS
+  {
+    { 1   ;   ;Permission Level    ;Option        ;CaptionML=ENU=Permission Level;
+                                                   OptionCaptionML=ENU=Read,Update;
+                                                   OptionString=Read,Update }
+    { 2   ;   ;User Group Code     ;Code20        ;TableRelation="User Group";
+                                                   CaptionML=ENU=User Group Code;
+                                                   NotBlank=Yes }
+    { 4   ;   ;User Group Name     ;Text50        ;FieldClass=FlowField;
+                                                   CalcFormula=Lookup("User Group".Name WHERE (Code=FIELD(User Group Code)));
+                                                   CaptionML=ENU=User Group Name;
+                                                   Editable=No }
+    { 6   ;   ;Has Permission      ;Boolean       ;CaptionML=ENU=Has Permission }
+    { 7   ;   ;Assign Permission   ;Boolean       ;CaptionML=ENU=Assign Permission }
+    { 8   ;   ;Remove Permission   ;Boolean       ;CaptionML=ENU=Remove Permission }
+  }
+  KEYS
+  {
+    {    ;Permission Level,User Group Code        ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

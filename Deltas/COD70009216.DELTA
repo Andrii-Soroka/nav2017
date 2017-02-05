@@ -1,0 +1,358 @@
+OBJECT Codeunit 70009216 G/L Source Name Permission Mgt
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.12.16;
+    Time=12:00:00;
+    Version List=GLSN10.0;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      ReadRoleId@1000000000 : TextConst 'ENU=G/L-SOURCE NAMES';
+      UpdateRoleId@1000000001 : TextConst 'ENU=G/L-SOURCE NAMES, E';
+
+    PROCEDURE GetAccessControl@1000000007(VAR TempUserAccess@1000000000 : TEMPORARY Record 70009203;VAR TempGroupAccess@1000000001 : TEMPORARY Record 70009204);
+    BEGIN
+      GetReadOnlyMembers(TempUserAccess,TempGroupAccess);
+      GetUpdateMembers(TempUserAccess,TempGroupAccess);
+    END;
+
+    PROCEDURE SetAccessControl@1000000004(VAR TempUserAccess@1000000001 : TEMPORARY Record 70009203;VAR TempGroupAccess@1000000000 : TEMPORARY Record 70009204);
+    BEGIN
+      UpdateUserAccessControl(TempUserAccess);
+      UpdateGroupAccessControl(TempGroupAccess);
+    END;
+
+    PROCEDURE SuggestAccessControl@70009200(VAR TempUserAccess@70009201 : TEMPORARY Record 70009203;VAR TempGroupAccess@70009200 : TEMPORARY Record 70009204);
+    VAR
+      LocalTempUserAccess@70009203 : TEMPORARY Record 70009203;
+      LocalTempGroupAccess@70009202 : TEMPORARY Record 70009204;
+    BEGIN
+      WITH LocalTempGroupAccess DO BEGIN
+        COPY(TempGroupAccess,TRUE);
+        SETRANGE("Has Permission",FALSE);
+        MODIFYALL("Assign Permission",TRUE);
+      END;
+      WITH LocalTempUserAccess DO BEGIN
+        COPY(TempUserAccess,TRUE);
+        SETRANGE("Has Permission",FALSE);
+        MODIFYALL("Assign Permission",TRUE);
+      END;
+    END;
+
+    LOCAL PROCEDURE UpdateUserAccessControl@1000000025(VAR TempUserAccess@1000000000 : TEMPORARY Record 70009203);
+    VAR
+      LocalTempUserAccess@1000000001 : TEMPORARY Record 70009203;
+    BEGIN
+      WITH LocalTempUserAccess DO BEGIN
+        COPY(TempUserAccess,TRUE);
+        SETRANGE("Assign Permission",TRUE);
+        SETRANGE("Updated Via User Group",FALSE);
+        IF FIND('-') THEN REPEAT
+          AddUserAccess("User Security ID","Permission Level");
+        UNTIL NEXT = 0;
+        SETRANGE("Assign Permission");
+        SETRANGE("Remove Permission",TRUE);
+        IF FIND('-') THEN REPEAT
+          RemoveUserAccess("User Security ID","Permission Level");
+        UNTIL NEXT = 0;
+        RESET;
+      END;
+    END;
+
+    LOCAL PROCEDURE UpdateGroupAccessControl@1000000026(VAR TempGroupAccess@1000000000 : TEMPORARY Record 70009204);
+    VAR
+      LocalTempGroupAccess@1000000001 : TEMPORARY Record 70009204;
+    BEGIN
+      WITH LocalTempGroupAccess DO BEGIN
+        COPY(TempGroupAccess,TRUE);
+        SETRANGE("Assign Permission",TRUE);
+        IF FIND('-') THEN REPEAT
+          AddGroupAccess("User Group Code","Permission Level");
+        UNTIL NEXT = 0;
+        SETRANGE("Assign Permission");
+        SETRANGE("Remove Permission",TRUE);
+        IF FIND('-') THEN REPEAT
+          RemoveGroupAccess("User Group Code","Permission Level");
+        UNTIL NEXT = 0;
+        RESET;
+      END;
+    END;
+
+    LOCAL PROCEDURE GetReadOnlyMembers@1000000005(VAR TempUserAccess@1000000003 : TEMPORARY Record 70009203;VAR TempGroupAccess@1000000002 : TEMPORARY Record 70009204);
+    VAR
+      TempUser@1000000001 : TEMPORARY Record 2000000120;
+      TempUserGroup@1000000000 : TEMPORARY Record 9000;
+    BEGIN
+      WhoThatCanView(DATABASE::"G/L Entry",TempUser,TempUserGroup);
+
+      CopyUserGroups(TempUserGroup,TempGroupAccess,TempGroupAccess."Permission Level"::Read);
+      CopyUsers(TempUser,TempUserAccess,TempGroupAccess,TempGroupAccess."Permission Level"::Read);
+    END;
+
+    LOCAL PROCEDURE GetUpdateMembers@1000000006(VAR TempUserAccess@1000000003 : TEMPORARY Record 70009203;VAR TempGroupAccess@1000000002 : TEMPORARY Record 70009204);
+    VAR
+      TempUser@1000000001 : TEMPORARY Record 2000000120;
+      TempUserGroup@1000000000 : TEMPORARY Record 9000;
+    BEGIN
+      WhoThatCanUpdate(DATABASE::Customer,TempUser,TempUserGroup);
+      WhoThatCanUpdate(DATABASE::Vendor,TempUser,TempUserGroup);
+      WhoThatCanUpdate(DATABASE::"Bank Account",TempUser,TempUserGroup);
+      WhoThatCanUpdate(DATABASE::"Fixed Asset",TempUser,TempUserGroup);
+
+      CopyUserGroups(TempUserGroup,TempGroupAccess,TempGroupAccess."Permission Level"::Update);
+      CopyUsers(TempUser,TempUserAccess,TempGroupAccess,TempGroupAccess."Permission Level"::Update);
+    END;
+
+    LOCAL PROCEDURE CopyUserGroups@1000000014(VAR TempUserGroup@1000000001 : TEMPORARY Record 9000;VAR TempGroupAccess@1000000000 : TEMPORARY Record 70009204;PermissionLevel@1000000002 : Option);
+    BEGIN
+      WITH TempUserGroup DO
+        IF FIND('-') THEN REPEAT
+          TempGroupAccess.INIT;
+          TempGroupAccess."Permission Level" := PermissionLevel;
+          TempGroupAccess."User Group Code" := Code;
+          TempGroupAccess."Has Permission" := GroupHasAccess(Code,PermissionLevel);
+          TempGroupAccess.INSERT;
+        UNTIL NEXT = 0;
+    END;
+
+    LOCAL PROCEDURE CopyUsers@1000000013(VAR TempUser@1000000002 : TEMPORARY Record 2000000120;VAR TempUserAccess@1000000000 : TEMPORARY Record 70009203;VAR TempGroupAccess@1000000001 : TEMPORARY Record 70009204;PermissionLevel@1000000003 : Option);
+    BEGIN
+      WITH TempUser DO
+        IF FIND('-') THEN REPEAT
+          TempUserAccess.INIT;
+          TempUserAccess."Permission Level" := PermissionLevel;
+          TempUserAccess."User Security ID" := "User Security ID";
+          TempUserAccess."Access Via User Group Code" := HasAccessViaGroup(TempUserAccess,TempGroupAccess);
+          TempUserAccess."Updated Via User Group" := TempUserAccess."Access Via User Group Code" <> '';
+          TempUserAccess."Has Permission" := UserHasAccess("User Security ID",PermissionLevel);
+          TempUserAccess.INSERT;
+        UNTIL NEXT = 0;
+    END;
+
+    LOCAL PROCEDURE WhoThatCanView@1000000000(TableId@1000000001 : Integer;VAR TempUser@1000000000 : TEMPORARY Record 2000000120;VAR TempUserGroup@1000000003 : TEMPORARY Record 9000);
+    VAR
+      Permission@1000000002 : Record 2000000005;
+    BEGIN
+      WITH Permission DO BEGIN
+        SETRANGE("Object Type","Object Type"::"Table Data");
+        SETRANGE("Object ID",TableId);
+        SETRANGE("Read Permission","Read Permission"::Yes);
+        IF FINDSET THEN REPEAT
+          AddUsersFromAccessControl("Role ID",TempUser);
+          AddGroupFromAccessControl("Role ID",TempUserGroup);
+        UNTIL NEXT = 0;
+      END;
+    END;
+
+    LOCAL PROCEDURE WhoThatCanUpdate@1000000001(TableId@1000000001 : Integer;VAR TempUser@1000000000 : TEMPORARY Record 2000000120;VAR TempUserGroup@1000000003 : TEMPORARY Record 9000);
+    VAR
+      Permission@1000000002 : Record 2000000005;
+    BEGIN
+      WITH Permission DO BEGIN
+        SETRANGE("Object Type","Object Type"::"Table Data");
+        SETRANGE("Object ID",TableId);
+        SETRANGE("Modify Permission","Modify Permission"::Yes);
+        IF FINDSET THEN REPEAT
+          AddUsersFromAccessControl("Role ID",TempUser);
+          AddGroupFromAccessControl("Role ID",TempUserGroup);
+        UNTIL NEXT = 0;
+      END;
+    END;
+
+    LOCAL PROCEDURE AddUsersFromAccessControl@1000000002(PermissionSetId@1000000001 : Code[20];VAR TempUser@1000000000 : TEMPORARY Record 2000000120);
+    VAR
+      AccessControl@1000000002 : Record 2000000053;
+      User@1000000003 : Record 2000000120;
+    BEGIN
+      WITH AccessControl DO BEGIN
+        SETRANGE("Role ID",PermissionSetId);
+        SETFILTER("Company Name",'%1|%2',COMPANYNAME,'');
+        IF FINDSET THEN REPEAT
+          IF NOT TempUser.GET("User Security ID") THEN
+            IF User.GET("User Security ID") THEN BEGIN
+              TempUser := User;
+              TempUser.INSERT;
+            END;
+        UNTIL NEXT = 0;
+      END;
+    END;
+
+    LOCAL PROCEDURE AddGroupFromAccessControl@1000000003(PermissionSetId@1000000001 : Code[20];VAR TempUserGroup@1000000000 : TEMPORARY Record 9000);
+    VAR
+      UserGroup@1000000002 : Record 9000;
+      AccessControl@1000000003 : Record 9002;
+    BEGIN
+      WITH AccessControl DO BEGIN
+        SETRANGE("Role ID",PermissionSetId);
+        SETFILTER("Company Name",'%1|%2',COMPANYNAME,'');
+        IF FINDSET THEN REPEAT
+          IF NOT TempUserGroup.GET("User Group Code") THEN
+            IF UserGroup.GET("User Group Code") THEN BEGIN
+              TempUserGroup := UserGroup;
+              TempUserGroup.INSERT;
+            END;
+        UNTIL NEXT = 0;
+      END;
+    END;
+
+    LOCAL PROCEDURE HasAccessViaGroup@1000000008(TempUserAccess@1000000001 : TEMPORARY Record 70009203;VAR TempGroupAccess@1000000000 : TEMPORARY Record 70009204) : Code[20];
+    VAR
+      UserGroupMember@1000000002 : Record 9001;
+      TempUserGroupAccess@1000000003 : TEMPORARY Record 70009204;
+    BEGIN
+      UserGroupMember.SETRANGE("User Security ID",TempUserAccess."User Security ID");
+      WITH TempUserGroupAccess DO BEGIN
+        COPY(TempGroupAccess,TRUE);
+        SETRANGE("Permission Level","Permission Level");
+        IF FIND('-') THEN REPEAT
+          UserGroupMember.SETRANGE("User Group Code","User Group Code");
+          IF UserGroupMember.FINDFIRST THEN
+            EXIT(UserGroupMember."User Group Code");
+        UNTIL NEXT = 0;
+      END;
+    END;
+
+    LOCAL PROCEDURE UserHasAccess@1000000011(UserSid@1000000000 : GUID;PermissionLevel@1000000001 : 'Read,Update') : Boolean;
+    VAR
+      AccessControl@1000000002 : Record 2000000053;
+      AppMgt@1000000003 : Codeunit 70009200;
+      AppGuid@1000000004 : GUID;
+    BEGIN
+      EVALUATE(AppGuid,AppMgt.GetAppId);
+      WITH AccessControl DO BEGIN
+        SETRANGE("User Security ID",UserSid);
+        SETFILTER("Company Name",'%1|%2',COMPANYNAME,'');
+        SETRANGE("App ID",AppGuid);
+        SETRANGE(Scope,Scope::Tenant);
+        CASE PermissionLevel OF
+          PermissionLevel::Read:
+            SETRANGE("Role ID",ReadRoleId);
+          PermissionLevel::Update:
+            SETRANGE("Role ID",UpdateRoleId);
+        END;
+        EXIT(NOT ISEMPTY);
+      END;
+    END;
+
+    LOCAL PROCEDURE GroupHasAccess@1000000012(GroupCode@1000000000 : Code[20];PermissionLevel@1000000001 : 'Read,Update') : Boolean;
+    VAR
+      UserGroupPermissionSet@1000000002 : Record 9003;
+      AppMgt@1000000004 : Codeunit 70009200;
+      AppGuid@1000000003 : GUID;
+    BEGIN
+      EVALUATE(AppGuid,AppMgt.GetAppId);
+      WITH UserGroupPermissionSet DO BEGIN
+        SETRANGE("User Group Code",GroupCode);
+        SETRANGE("App ID",AppGuid);
+        SETRANGE(Scope,Scope::Tenant);
+        CASE PermissionLevel OF
+          PermissionLevel::Read:
+            SETRANGE("Role ID",ReadRoleId);
+          PermissionLevel::Update:
+            SETRANGE("Role ID",UpdateRoleId);
+        END;
+        EXIT(NOT ISEMPTY);
+      END;
+    END;
+
+    LOCAL PROCEDURE AddUserAccess@1000000010(UserSid@1000000000 : GUID;PermissionLevel@1000000001 : 'Read,Update') : Boolean;
+    VAR
+      AccessControl@1000000002 : Record 2000000053;
+      AppMgt@1000000003 : Codeunit 70009200;
+      AppGuid@1000000004 : GUID;
+    BEGIN
+      EVALUATE(AppGuid,AppMgt.GetAppId);
+      WITH AccessControl DO BEGIN
+        INIT;
+        "User Security ID" := UserSid;
+        "App ID" := AppGuid;
+        "Company Name" := COMPANYNAME;
+        Scope := Scope::Tenant;
+        CASE PermissionLevel OF
+          PermissionLevel::Read:
+            "Role ID" := ReadRoleId;
+          PermissionLevel::Update:
+            "Role ID" := UpdateRoleId;
+        END;
+        INSERT(TRUE);
+      END;
+    END;
+
+    LOCAL PROCEDURE AddGroupAccess@1000000009(GroupCode@1000000000 : Code[20];PermissionLevel@1000000001 : 'Read,Update') : Boolean;
+    VAR
+      UserGroupPermissionSet@1000000002 : Record 9003;
+      AppMgt@1000000004 : Codeunit 70009200;
+      AppGuid@1000000003 : GUID;
+    BEGIN
+      EVALUATE(AppGuid,AppMgt.GetAppId);
+      WITH UserGroupPermissionSet DO BEGIN
+        INIT;
+        "User Group Code" := GroupCode;
+        "App ID" := AppGuid;
+        Scope := Scope::Tenant;
+        CASE PermissionLevel OF
+          PermissionLevel::Read:
+            "Role ID" := ReadRoleId;
+          PermissionLevel::Update:
+            "Role ID" := UpdateRoleId;
+        END;
+        INSERT(TRUE);
+      END;
+    END;
+
+    LOCAL PROCEDURE RemoveUserAccess@1000000019(UserSid@1000000000 : GUID;PermissionLevel@1000000001 : 'Read,Update') : Boolean;
+    VAR
+      AccessControl@1000000002 : Record 2000000053;
+      AppMgt@1000000003 : Codeunit 70009200;
+      AppGuid@1000000004 : GUID;
+    BEGIN
+      EVALUATE(AppGuid,AppMgt.GetAppId);
+      WITH AccessControl DO BEGIN
+        SETRANGE("User Security ID",UserSid);
+        SETFILTER("Company Name",'%1|%2',COMPANYNAME,'');
+        SETRANGE("App ID",AppGuid);
+        SETRANGE(Scope,Scope::Tenant);
+        CASE PermissionLevel OF
+          PermissionLevel::Read:
+            SETRANGE("Role ID",ReadRoleId);
+          PermissionLevel::Update:
+            SETRANGE("Role ID",UpdateRoleId);
+        END;
+        DELETEALL(TRUE);
+      END;
+    END;
+
+    LOCAL PROCEDURE RemoveGroupAccess@1000000018(GroupCode@1000000000 : Code[20];PermissionLevel@1000000001 : 'Read,Update') : Boolean;
+    VAR
+      UserGroupPermissionSet@1000000002 : Record 9003;
+      AppMgt@1000000004 : Codeunit 70009200;
+      AppGuid@1000000003 : GUID;
+    BEGIN
+      EVALUATE(AppGuid,AppMgt.GetAppId);
+      WITH UserGroupPermissionSet DO BEGIN
+        SETRANGE("User Group Code",GroupCode);
+        SETRANGE("App ID",AppGuid);
+        SETRANGE(Scope,Scope::Tenant);
+        CASE PermissionLevel OF
+          PermissionLevel::Read:
+            SETRANGE("Role ID",ReadRoleId);
+          PermissionLevel::Update:
+            SETRANGE("Role ID",UpdateRoleId);
+        END;
+        DELETEALL(TRUE);
+      END;
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

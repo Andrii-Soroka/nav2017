@@ -1,0 +1,45 @@
+OBJECT Page 70009202 G/L Source Name Help Resources
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.12.16;
+    Time=12:00:00;
+    Version List=GLSN10.0;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    SourceTable=Table70009202;
+    PageType=List;
+    OnOpenPage=BEGIN
+                 InitializeResources;
+               END;
+
+  }
+  CONTROLS
+  {
+    { 1000000000;0;Container;
+                ContainerType=ContentArea }
+
+    { 1000000001;1;Group  ;
+                Name=Group;
+                GroupType=Repeater }
+
+    { 1000000002;2;Field  ;
+                SourceExpr=Code }
+
+    { 1000000003;2;Field  ;
+                SourceExpr=Url }
+
+    { 1000000004;2;Field  ;
+                SourceExpr=Icon }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

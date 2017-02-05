@@ -1,0 +1,42 @@
+OBJECT Page 70009200 G/L Source Name List
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.12.16;
+    Time=12:00:00;
+    Version List=GLSN10.0;
+  }
+  PROPERTIES
+  {
+    Editable=No;
+    CaptionML=ENU=G/L Source Name List;
+    SourceTable=Table70009200;
+    PageType=List;
+  }
+  CONTROLS
+  {
+    { 70013400;0;Container;
+                ContainerType=ContentArea }
+
+    { 70013401;1;Group    ;
+                Name=Group;
+                GroupType=Repeater }
+
+    { 70013402;2;Field    ;
+                SourceExpr="Source Type" }
+
+    { 70013403;2;Field    ;
+                SourceExpr="Source No." }
+
+    { 70013404;2;Field    ;
+                SourceExpr="Source Name" }
+
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

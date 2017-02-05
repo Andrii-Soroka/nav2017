@@ -1,0 +1,39 @@
+OBJECT Table 70009200 G/L Source Name
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.12.16;
+    Time=12:00:00;
+    Version List=GLSN10.0;
+  }
+  PROPERTIES
+  {
+    DrillDownPageID=Page70009206;
+  }
+  FIELDS
+  {
+    { 1   ;   ;Source Type         ;Option        ;CaptionML=ENU=Source Type;
+                                                   OptionCaptionML=ENU=" ,Customer,Vendor,Bank Account,Fixed Asset";
+                                                   OptionString=[ ,Customer,Vendor,Bank Account,Fixed Asset] }
+    { 2   ;   ;Source No.          ;Code20        ;TableRelation=IF (Source Type=CONST(Customer)) Customer
+                                                                 ELSE IF (Source Type=CONST(Vendor)) Vendor
+                                                                 ELSE IF (Source Type=CONST(Bank Account)) "Bank Account"
+                                                                 ELSE IF (Source Type=CONST(Fixed Asset)) "Fixed Asset";
+                                                   CaptionML=ENU=Source No. }
+    { 3   ;   ;Source Name         ;Text50        ;CaptionML=ENU=Source Name }
+  }
+  KEYS
+  {
+    {    ;Source Type,Source No.                  ;Clustered=Yes }
+  }
+  FIELDGROUPS
+  {
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

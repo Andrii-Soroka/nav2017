@@ -1,0 +1,81 @@
+OBJECT Codeunit 70009210 G/L Source Name Notifications
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.12.16;
+    Time=12:00:00;
+    Version List=GLSN10.0;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      GLSourceName@1000 : Record 70009200;
+      NewFeatuerNotificationIdTxt@1001 : TextConst '@@@={Locked};ENU=1dd20373-27f8-4c68-a7b4-aab7ca199b98';
+      NewFeatureMessageTxt@1002 : TextConst 'ENU=We have added a new feature to the General Ledger Entries.  Now you can see the Source Name column!';
+      NewFeatureLinkTxt@1003 : TextConst 'ENU=Show me the details';
+      MissingPermissionNotificationIdTxt@1004 : TextConst '@@@={Locked};ENU=4fa8230a-53e5-4182-8423-373dc6f23f9d';
+      MissingPermissionMessageText@1005 : TextConst 'ENU=You don''t have permissions to use our new feature that will show Source Names.  Please contact your administrator.';
+      MissingPermissionLinkTxt@1006 : TextConst 'ENU=What should I show?';
+
+    [EventSubscriber(Page,20,OnOpenPageEvent,"",Skip,Skip)]
+    LOCAL PROCEDURE CatchGLEntriesOpenPage@1(VAR Rec@1000 : Record 17);
+    BEGIN
+      IF NOT GLSourceName.READPERMISSION THEN
+        NotifyOnMissingPermission(Rec)
+      ELSE
+        NotifyOnNewFeature(Rec);
+    END;
+
+    LOCAL PROCEDURE NotifyOnMissingPermission@1000000000(VAR Rec@1000 : Record 17);
+    VAR
+      MissingPermissionNotification@1001 : Notification;
+    BEGIN
+      WITH MissingPermissionNotification DO BEGIN
+        ID := GetMissingPermissionNotificationId;
+        MESSAGE := MissingPermissionMessageText;
+        SCOPE := NOTIFICATIONSCOPE::LocalScope;
+        ADDACTION(MissingPermissionLinkTxt,CODEUNIT::"G/L Source Name Perm. Notif.",'ShowAssistedSetupToUser');
+        SEND;
+      END;
+    END;
+
+    LOCAL PROCEDURE NotifyOnNewFeature@1000000001(VAR Rec@1000 : Record 17);
+    VAR
+      NewFeatureNotification@1000000000 : Notification;
+    BEGIN
+      WITH NewFeatureNotification DO BEGIN
+        ID := GetNewFeatuerNotificationId;
+        MESSAGE := NewFeatureMessageTxt;
+        SCOPE := NOTIFICATIONSCOPE::LocalScope;
+        ADDACTION(NewFeatureLinkTxt,CODEUNIT::"G/L Source Name Feature Notif.",'ShowDetailsToUser');
+        SEND;
+      END;
+    END;
+
+    PROCEDURE GetMissingPermissionNotificationId@19() : GUID;
+    VAR
+      MissingPermissionNotificationId@1000 : GUID;
+    BEGIN
+      EVALUATE(MissingPermissionNotificationId,MissingPermissionNotificationIdTxt);
+      EXIT(MissingPermissionNotificationId);
+    END;
+
+    PROCEDURE GetNewFeatuerNotificationId@8() : GUID;
+    VAR
+      NewFeatuerNotificationId@1000 : GUID;
+    BEGIN
+      EVALUATE(NewFeatuerNotificationId,NewFeatuerNotificationIdTxt);
+      EXIT(NewFeatuerNotificationId);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

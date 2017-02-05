@@ -1,0 +1,74 @@
+OBJECT Modification "General Ledger Entries"(Page 20)
+{
+  OBJECT-PROPERTIES
+  {
+    Date=24.11.16;
+    Time=12:00:00;
+    Version List=NAVW110.0.00.14199;
+  }
+  PROPERTIES
+  {
+    Target="General Ledger Entries"(Page 20);
+  }
+  CHANGES
+  {
+    { Deletion          ;Target=SourceCard(Action 70009203);
+                         ChangedElements=ActionCollection
+                         {
+                           { 70009203;2   ;Action    ;
+                                           Name=SourceCard;
+                                           AccessByPermission=TableData 70009200=R;
+                                           CaptionML=ENU=Source Card;
+                                           ToolTipML=ENU=Show the card for the master record defined as the source for this entry;
+                                           ApplicationArea=#Basic,#Suite;
+                                           RunObject=Codeunit 70009206;
+                                           Image=Card }
+                         }
+                          }
+    { Deletion          ;Target=Control 70009201;
+                         ChangedElements=ControlCollection
+                         {
+                           { 70009201;2;Field    ;
+                                       AccessByPermission=TableData 70009200=R;
+                                       ToolTipML=ENU=Specifies the type of the master record associated with this entry;
+                                       ApplicationArea=#Basic,#Suite;
+                                       SourceExpr="Source Type" }
+
+                         }
+                          }
+    { Deletion          ;Target=Control 70009202;
+                         ChangedElements=ControlCollection
+                         {
+                           { 70009202;2;Field    ;
+                                       AccessByPermission=TableData 70009200=R;
+                                       ToolTipML=ENU=Specifies the number of the master record associated with this entry;
+                                       ApplicationArea=#Basic,#Suite;
+                                       SourceExpr="Source No.";
+                                       Visible=FALSE }
+
+                         }
+                          }
+    { Deletion          ;Target=Control 70009200;
+                         ChangedElements=ControlCollection
+                         {
+                           { 70009200;2;Field    ;
+                                       AccessByPermission=TableData 70009200=R;
+                                       ToolTipML=ENU=Specifies the name of the master record associated with this entry;
+                                       ApplicationArea=#Basic,#Suite;
+                                       SourceExpr="Source Name" }
+
+                         }
+                          }
+    { PropertyModification;
+                         Property=Version List;
+                         OriginalValue=NAVW110.0.00.14199,GLSN10.0;
+                         ModifiedValue=NAVW110.0.00.14199 }
+  }
+  CODE
+  {
+
+    BEGIN
+    END.
+  }
+}
+

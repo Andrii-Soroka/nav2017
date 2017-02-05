@@ -1,0 +1,46 @@
+OBJECT Codeunit 70009205 G/L Source Name FxdAsset Upd.
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.12.16;
+    Time=12:00:00;
+    Version List=GLSN10.0;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      GLSourceNamesMgt@70013401 : Codeunit 70009201;
+      SourceType@70013400 : ' ,Customer,Vendor,Bank Account,Fixed Asset';
+
+    [EventSubscriber(Table,5600,OnAfterInsertEvent,"",Skip)]
+    LOCAL PROCEDURE UpdateSourceNameOnFixedAssetInsert@1033(VAR Rec@1020 : Record 5600;RunTrigger@1021 : Boolean);
+    BEGIN
+      IF Rec.ISTEMPORARY THEN EXIT;
+      GLSourceNamesMgt.AddSource(SourceType::"Fixed Asset",Rec."No.",Rec.Description);
+    END;
+
+    [EventSubscriber(Table,5600,OnAfterInsertEvent,"",Skip)]
+    LOCAL PROCEDURE UpdateSourceNameOnFixedAssetDelete@1032(VAR Rec@1020 : Record 5600;RunTrigger@1021 : Boolean);
+    BEGIN
+      IF Rec.ISTEMPORARY THEN EXIT;
+      GLSourceNamesMgt.RemoveSource(SourceType::"Fixed Asset",Rec."No.");
+    END;
+
+    [EventSubscriber(Table,5600,OnAfterModifyEvent,"",Skip)]
+    LOCAL PROCEDURE UpdateSourceNameOnFixedAssetModify@1031(VAR Rec@1020 : Record 5600;VAR xRec@1021 : Record 5600;RunTrigger@1022 : Boolean);
+    BEGIN
+      IF Rec.ISTEMPORARY THEN EXIT;
+      GLSourceNamesMgt.UpdateSource(SourceType::"Fixed Asset",Rec."No.",Rec.Description);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

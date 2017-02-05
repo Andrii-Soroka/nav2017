@@ -1,0 +1,129 @@
+OBJECT Codeunit 70009215 G/L Source Name Assisted Setup
+{
+  OBJECT-PROPERTIES
+  {
+    Date=23.01.17;
+    Time=13:08:35;
+    Version List=GLSN10.0;
+  }
+  PROPERTIES
+  {
+    OnRun=BEGIN
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      Setup@1000000000 : Record 70009201;
+      GLSourceNamesTxt@1000000001 : TextConst 'ENU=Set up G/L Source Names';
+      HelpResource@1000000002 : Record 70009202;
+
+    [EventSubscriber(Page,1801,OnOpenPageEvent,"",Skip)]
+    LOCAL PROCEDURE OnAssistedSetupOpenPage@1(VAR Rec@1000000000 : Record 1803);
+    BEGIN
+      IF NOT Setup.WRITEPERMISSION THEN EXIT;
+      IF NOT HelpResource.WRITEPERMISSION THEN EXIT;
+      InitializeSetup;
+      AddToAssistedSetup(Rec);
+    END;
+
+    LOCAL PROCEDURE InitializeSetup@1000000002();
+    BEGIN
+      WITH Setup DO
+        IF ISEMPTY THEN BEGIN
+          INIT;
+          INSERT;
+        END;
+
+      WITH HelpResource DO
+        InitializeResources;
+    END;
+
+    LOCAL PROCEDURE AddToAssistedSetup@1000000001(VAR AssistedSetup@1000000000 : Record 1803);
+    BEGIN
+      WITH AssistedSetup DO BEGIN
+        AddSetupAssistant(
+          AssistedSetup,
+          PAGE::"G/L Source Name Setup Wizard",
+          GLSourceNamesTxt,
+          GetAssistedSetupSortingOrder,
+          TRUE,
+          GetAssistedSetupGroupId,
+          "Item Type"::"Setup and Help"
+        );
+
+        AddSetupAssistantResources(
+          AssistedSetup,
+          PAGE::"G/L Source Name Setup Wizard",
+          HelpResource.GetUrl(HelpResource.GetSetupVideoCode),
+          HelpResource.GetUrl(HelpResource.GetSetupHelpCode),
+          0,
+          PAGE::"G/L Source Name Setup Wizard",
+          HelpResource.Get240PXIconCode
+        );
+      END;
+    END;
+
+    LOCAL PROCEDURE AddSetupAssistant@7(VAR AssistedSetup@1000000000 : Record 1803;EnteryNo@1001 : Integer;AssistantName@1000 : Text[250];SortingOrder@1003 : Integer;AssistantVisible@1002 : Boolean;ParentId@1004 : Integer;EnteryType@1005 : Option);
+    BEGIN
+      WITH AssistedSetup DO BEGIN
+        IF NOT GET(EnteryNo) THEN BEGIN
+          CLEAR(AssistedSetup);
+          "Page ID" := EnteryNo;
+          Visible := AssistantVisible;
+          IF EnteryType = "Item Type"::Group THEN
+            Status := Setup.Status;
+          INSERT(TRUE);
+        END;
+
+        "Page ID" := EnteryNo;
+        Name := AssistantName;
+        Order := SortingOrder;
+        "Item Type" := EnteryType;
+        Parent := ParentId;
+        MODIFY(TRUE);
+      END;
+    END;
+
+    LOCAL PROCEDURE AddSetupAssistantResources@18(VAR AssistedSetup@1000000000 : Record 1803;EnteryNo@1004 : Integer;videoLink@1000 : Text[250];HelpLink@1001 : Text[250];TourId@1002 : Integer;AssistedPageId@1003 : Integer;IconCode@1005 : Code[50]);
+    VAR
+      TempFile@1006 : Text;
+    BEGIN
+      WITH AssistedSetup DO BEGIN
+        IF NOT GET(EnteryNo) THEN
+          EXIT;
+
+        "Video Url" := videoLink;
+        "Help Url" := HelpLink;
+        "Tour Id" := TourId;
+        "Assisted Setup Page ID" := AssistedPageId;
+        IF ImportIcon(IconCode,TempFile) THEN
+          IF TempFile <> '' THEN
+            Icon.IMPORTFILE(TempFile,'');
+        MODIFY(TRUE);
+      END;
+    END;
+
+    [TryFunction]
+    LOCAL PROCEDURE ImportIcon@15(IconCode@1001 : Code[50];VAR TempFile@1005 : Text);
+    BEGIN
+      IF NOT HelpResource.GetMediaFile(IconCode,TempFile) THEN
+        TempFile := '';
+    END;
+
+    LOCAL PROCEDURE GetAssistedSetupGroupId@1000000000() : Integer;
+    BEGIN
+      EXIT(70009200);
+    END;
+
+    LOCAL PROCEDURE GetAssistedSetupSortingOrder@1000000003() : Integer;
+    BEGIN
+      EXIT(1);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+

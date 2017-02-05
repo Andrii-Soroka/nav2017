@@ -1,0 +1,105 @@
+OBJECT Codeunit 70009206 G/L Show Source Card
+{
+  OBJECT-PROPERTIES
+  {
+    Date=12.12.16;
+    Time=12:00:00;
+    Version List=GLSN10.0;
+  }
+  PROPERTIES
+  {
+    TableNo=17;
+    OnRun=BEGIN
+            ShowGLEntrySourceCard(Rec);
+          END;
+
+  }
+  CODE
+  {
+    VAR
+      NoSourceDefined@70013400 : TextConst 'ENU=Source is not defined';
+      SourceNotFound@70013401 : TextConst 'ENU=%1 %2 %3 not found';
+
+    PROCEDURE ShowSourceNameCard@70013405(GLSourceName@70013400 : Record 70009200);
+    BEGIN
+      WITH GLSourceName DO
+        CASE "Source Type" OF
+        "Source Type"::Customer:
+          ShowCustCard("Source No.");
+        "Source Type"::Vendor:
+          ShowVendCard("Source No.");
+        "Source Type"::"Bank Account":
+          ShowBankAccCard("Source No.");
+        "Source Type"::"Fixed Asset":
+          ShowFixedAssetCard("Source No.");
+        ELSE
+          ERROR(NoSourceDefined);
+      END;
+    END;
+
+    LOCAL PROCEDURE ShowGLEntrySourceCard@70013400(GLEntry@70013400 : Record 17);
+    BEGIN
+      WITH GLEntry DO
+        CASE "Source Type" OF
+          "Source Type"::Customer:
+            ShowCustCard("Source No.");
+          "Source Type"::Vendor:
+            ShowVendCard("Source No.");
+          "Source Type"::"Bank Account":
+            ShowBankAccCard("Source No.");
+          "Source Type"::"Fixed Asset":
+            ShowFixedAssetCard("Source No.");
+          ELSE
+            ERROR(NoSourceDefined);
+        END;
+    END;
+
+    LOCAL PROCEDURE ShowCustCard@70013401(No@70013400 : Code[20]);
+    VAR
+      Cust@70013401 : Record 18;
+    BEGIN
+      WITH Cust DO
+        IF GET(No) THEN
+          PAGE.RUN(PAGE::"Customer Card",Cust)
+        ELSE
+          ERROR(SourceNotFound,TABLECAPTION,FIELDCAPTION("No."),No);
+    END;
+
+    LOCAL PROCEDURE ShowVendCard@70013402(No@70013400 : Code[20]);
+    VAR
+      Vend@70013401 : Record 23;
+    BEGIN
+      WITH Vend DO
+        IF GET(No) THEN
+          PAGE.RUN(PAGE::"Vendor Card",Vend)
+        ELSE
+          ERROR(SourceNotFound,TABLECAPTION,FIELDCAPTION("No."),No);
+    END;
+
+    LOCAL PROCEDURE ShowBankAccCard@70013403(No@70013400 : Code[20]);
+    VAR
+      BankAcc@70013401 : Record 270;
+    BEGIN
+      WITH BankAcc DO
+        IF GET(No) THEN
+          PAGE.RUN(PAGE::"Bank Account Card",BankAcc)
+        ELSE
+          ERROR(SourceNotFound,TABLECAPTION,FIELDCAPTION("No."),No);
+    END;
+
+    LOCAL PROCEDURE ShowFixedAssetCard@70013404(No@70013400 : Code[20]);
+    VAR
+      FixedAsset@70013401 : Record 5600;
+    BEGIN
+      WITH FixedAsset DO
+        IF GET(No) THEN
+          PAGE.RUN(PAGE::"Fixed Asset Card",FixedAsset)
+        ELSE
+          ERROR(SourceNotFound,TABLECAPTION,FIELDCAPTION("No."),No);
+    END;
+
+    BEGIN
+    END.
+  }
+}
+
