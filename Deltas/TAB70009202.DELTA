@@ -2,8 +2,8 @@ OBJECT Table 70009202 G/L Source Name Help Resource
 {
   OBJECT-PROPERTIES
   {
-    Date=12.12.16;
-    Time=12:00:00;
+    Date=08.02.17;
+    Time=18:30:00;
     Version List=GLSN10.0;
   }
   PROPERTIES
@@ -168,8 +168,9 @@ OBJECT Table 70009202 G/L Source Name Help Resource
     VAR
       TempBlob@1000000000 : Record 99008535;
       IconDescription@1000000001 : TextConst 'ENU=G/L Source Name Icon 70x70';
+      GLSourceNameIcon@70009200 : Codeunit 70009230;
     BEGIN
-      CODEUNIT.RUN(CODEUNIT::"G/L Source Name Icon 70x70",TempBlob);
+      GLSourceNameIcon.GetIcon(TempBlob);
       InitIcon(Get70PXIconCode,IconDescription,TempBlob);
     END;
 
@@ -177,8 +178,9 @@ OBJECT Table 70009202 G/L Source Name Help Resource
     VAR
       TempBlob@1000000000 : Record 99008535;
       IconDescription@1000000001 : TextConst 'ENU=G/L Source Name Icon 150x150';
+      GLSourceNameIcon@70009200 : Codeunit 70009231;
     BEGIN
-      CODEUNIT.RUN(CODEUNIT::"G/L Source Name Icon 150x150",TempBlob);
+      GLSourceNameIcon.GetIcon(TempBlob);
       InitIcon(Get150PXIconCode,IconDescription,TempBlob);
     END;
 
@@ -186,8 +188,9 @@ OBJECT Table 70009202 G/L Source Name Help Resource
     VAR
       TempBlob@1000000000 : Record 99008535;
       IconDescription@1000000001 : TextConst 'ENU=G/L Source Name Icon 240x240';
+      GLSourceNameIcon@70009200 : Codeunit 70009232;
     BEGIN
-      CODEUNIT.RUN(CODEUNIT::"G/L Source Name Icon 240x240",TempBlob);
+      GLSourceNameIcon.GetIcon(TempBlob);
       InitIcon(Get70PXIconCode,IconDescription,TempBlob);
     END;
 
@@ -195,8 +198,9 @@ OBJECT Table 70009202 G/L Source Name Help Resource
     VAR
       TempBlob@1000000000 : Record 99008535;
       IconDescription@1000000001 : TextConst 'ENU=G/L Source Name Icon 250x250';
+      GLSourceNameIcon@70009200 : Codeunit 70009233;
     BEGIN
-      CODEUNIT.RUN(CODEUNIT::"G/L Source Name Icon 250x250",TempBlob);
+      GLSourceNameIcon.GetIcon(TempBlob);
       InitIcon(Get250PXIconCode,IconDescription,TempBlob);
     END;
 
@@ -204,8 +208,9 @@ OBJECT Table 70009202 G/L Source Name Help Resource
     VAR
       TempBlob@1000000000 : Record 99008535;
       IconDescription@1000000001 : TextConst 'ENU=G/L Source Name Icon 417x417';
+      GLSourceNameIcon@70009200 : Codeunit 70009234;
     BEGIN
-      CODEUNIT.RUN(CODEUNIT::"G/L Source Name Icon 417x417",TempBlob);
+      GLSourceNameIcon.GetIcon(TempBlob);
       InitIcon(Get417PXIconCode,IconDescription,TempBlob);
     END;
 

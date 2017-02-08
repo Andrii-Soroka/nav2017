@@ -2,17 +2,13 @@ OBJECT Codeunit 70009230 G/L Source Name Icon 70x70
 {
   OBJECT-PROPERTIES
   {
-    Date=12.12.16;
-    Time=12:00:00;
+    Date=08.02.17;
+    Time=18:26:00;
     Version List=GLSN10.0;
   }
   PROPERTIES
   {
-    TableNo=99008535;
     OnRun=BEGIN
-            Blob.CREATEOUTSTREAM(OutStr);
-            MemoryStream := MemoryStream.MemoryStream(Convert.FromBase64String(IconSource));
-            COPYSTREAM(OutStr,MemoryStream);
           END;
 
   }
@@ -22,6 +18,13 @@ OBJECT Codeunit 70009230 G/L Source Name Icon 70x70
       Convert@1000000001 : DotNet "'mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'.System.Convert";
       MemoryStream@1000000002 : DotNet "'mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'.System.IO.MemoryStream";
       OutStr@1000000003 : OutStream;
+
+    PROCEDURE GetIcon@70009200(VAR TempBlob@70009200 : Record 99008535);
+    BEGIN
+      TempBlob.Blob.CREATEOUTSTREAM(OutStr);
+      MemoryStream := MemoryStream.MemoryStream(Convert.FromBase64String(IconSource));
+      COPYSTREAM(OutStr,MemoryStream);
+    END;
 
     LOCAL PROCEDURE IconSource@1000000001() : Text;
     BEGIN
