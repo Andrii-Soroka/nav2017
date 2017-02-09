@@ -3,7 +3,7 @@ OBJECT Page 70009210 G/L Source Name Setup Wizard
   OBJECT-PROPERTIES
   {
     Date=09.02.17;
-    Time=14:30:19;
+    Time=19:09:40;
     Version List=GLSN10.0;
   }
   PROPERTIES
@@ -433,9 +433,9 @@ OBJECT Page 70009210 G/L Source Name Setup Wizard
     VAR
       Setup@1000000000 : Record 70009201;
     BEGIN
+      Status := Status::Completed;
       Setup.GET;
       Setup.TRANSFERFIELDS(Rec);
-      Setup.Status := Setup.Status::Completed;
       Setup.MODIFY;
     END;
 
