@@ -2,8 +2,8 @@ OBJECT Page 70009210 G/L Source Name Setup Wizard
 {
   OBJECT-PROPERTIES
   {
-    Date=12.12.16;
-    Time=12:00:00;
+    Date=09.02.17;
+    Time=14:30:19;
     Version List=GLSN10.0;
   }
   PROPERTIES
@@ -40,7 +40,7 @@ OBJECT Page 70009210 G/L Source Name Setup Wizard
 
     OnQueryClosePage=BEGIN
                        IF CloseAction = ACTION::OK THEN
-                         IF AssistedSetup.GetStatus(PAGE::"G/L Source Name Setup Wizard") = AssistedSetup.Status::"Not Completed" THEN
+                         IF Status = Status::"Not Completed" THEN
                            IF NOT CONFIRM(NAVNotSetUpQst,FALSE) THEN
                              ERROR('');
                      END;
@@ -268,7 +268,6 @@ OBJECT Page 70009210 G/L Source Name Setup Wizard
   CODE
   {
     VAR
-      AssistedSetup@1005 : Record 1803;
       MediaRepositoryStandard@1040 : Record 9400;
       MediaRepositoryDone@1041 : Record 9400;
       TempUserAccess@1000000001 : TEMPORARY Record 70009203;
@@ -318,7 +317,6 @@ OBJECT Page 70009210 G/L Source Name Setup Wizard
     BEGIN
       StoreSetup;
       StoreAccessControl;
-      AssistedSetup.SetStatus(PAGE::"G/L Source Name Setup Wizard",AssistedSetup.Status::Completed);
       CurrPage.CLOSE;
     END;
 
