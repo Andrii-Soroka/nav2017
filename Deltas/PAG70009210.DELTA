@@ -2,13 +2,16 @@ OBJECT Page 70009210 G/L Source Name Setup Wizard
 {
   OBJECT-PROPERTIES
   {
-    Date=09.02.17;
-    Time=19:09:40;
+    Date=20.02.17;
+    Time=09:36:51;
     Version List=GLSN10.0;
   }
   PROPERTIES
   {
     CaptionML=ENU=G/L Source Name Setup;
+    InsertAllowed=No;
+    DeleteAllowed=No;
+    LinksAllowed=No;
     SourceTable=Table70009201;
     PageType=NavigatePage;
     SourceTableTemporary=Yes;
@@ -192,6 +195,7 @@ OBJECT Page 70009210 G/L Source Name Setup Wizard
     { 1000000000;2;Part   ;
                 Name=GroupsWithReadAccess;
                 CaptionML=ENU=User Groups requiring read access;
+                ApplicationArea=#Basic,#Suite;
                 SubPageView=WHERE(Permission Level=CONST(Read));
                 PagePartID=Page70009204;
                 PartType=Page }
@@ -204,6 +208,7 @@ OBJECT Page 70009210 G/L Source Name Setup Wizard
     { 1000000001;2;Part   ;
                 Name=GroupsWithUpdateAccess;
                 CaptionML=ENU=User Groups requiring update access;
+                ApplicationArea=#Basic,#Suite;
                 SubPageView=WHERE(Permission Level=CONST(Update));
                 PagePartID=Page70009204;
                 PartType=Page }
@@ -216,6 +221,7 @@ OBJECT Page 70009210 G/L Source Name Setup Wizard
     { 1000000006;2;Part   ;
                 Name=UsersWithReadAccess;
                 CaptionML=ENU=Users requiring read access;
+                ApplicationArea=#Basic,#Suite;
                 SubPageView=WHERE(Permission Level=CONST(Read));
                 PagePartID=Page70009203;
                 PartType=Page }
@@ -228,6 +234,7 @@ OBJECT Page 70009210 G/L Source Name Setup Wizard
     { 1000000004;2;Part   ;
                 Name=UsersWithUpdateAccess;
                 CaptionML=ENU=Users requiring update access;
+                ApplicationArea=#Basic,#Suite;
                 SubPageView=WHERE(Permission Level=CONST(Update));
                 PagePartID=Page70009203;
                 PartType=Page }
@@ -242,6 +249,7 @@ OBJECT Page 70009210 G/L Source Name Setup Wizard
 
     { 1000000003;3;Field  ;
                 ToolTipML=ENU=Your registration will only be stored in Dynamics365.  Your E-Mail Address is not shared with anyone.;
+                ApplicationArea=#Basic,#Suite;
                 SourceExpr="Registration E-Mail Address" }
 
     { 17  ;1   ;Group     ;

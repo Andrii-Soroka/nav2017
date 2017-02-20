@@ -2,8 +2,8 @@ OBJECT Page 70009202 G/L Source Name Help Resources
 {
   OBJECT-PROPERTIES
   {
-    Date=12.12.16;
-    Time=12:00:00;
+    Date=20.02.17;
+    Time=09:39:05;
     Version List=GLSN10.0;
   }
   PROPERTIES
@@ -26,12 +26,15 @@ OBJECT Page 70009202 G/L Source Name Help Resources
                 GroupType=Repeater }
 
     { 1000000002;2;Field  ;
+                ApplicationArea=#Basic,#Suite;
                 SourceExpr=Code }
 
     { 1000000003;2;Field  ;
+                ApplicationArea=#Basic,#Suite;
                 SourceExpr=Url }
 
     { 1000000004;2;Field  ;
+                ApplicationArea=#Basic,#Suite;
                 SourceExpr=Icon }
 
   }

@@ -2,8 +2,8 @@ OBJECT Page 70009203 G/L Source Name Users ListPart
 {
   OBJECT-PROPERTIES
   {
-    Date=12.12.16;
-    Time=12:00:00;
+    Date=20.02.17;
+    Time=09:37:32;
     Version List=GLSN10.0;
   }
   PROPERTIES
@@ -30,37 +30,44 @@ OBJECT Page 70009203 G/L Source Name Users ListPart
 
     { 1000000002;2;Field  ;
                 ToolTipML=ENU=Indicates whether the user has full access or just read access to G/L Source Names Lookup table;
+                ApplicationArea=#Basic,#Suite;
                 SourceExpr="Permission Level";
                 Visible=FALSE;
                 Editable=FALSE }
 
     { 1000000003;2;Field  ;
+                ApplicationArea=#Basic,#Suite;
                 SourceExpr="User Name";
                 Visible=FALSE;
                 Editable=FALSE }
 
     { 1000000004;2;Field  ;
+                ApplicationArea=#Basic,#Suite;
                 SourceExpr="User Full Name";
                 Editable=FALSE }
 
     { 1000000005;2;Field  ;
                 CaptionML=ENU=User Group Member;
                 ToolTipML=ENU=Indicates if this user is a member of a user group in one of the previous steps.;
+                ApplicationArea=#Basic,#Suite;
                 SourceExpr="Access Via User Group Code" <> '';
                 Editable=FALSE }
 
     { 1000000006;2;Field  ;
                 ToolTipML=ENU=Indicates whether the user already has required permissions;
+                ApplicationArea=#Basic,#Suite;
                 SourceExpr="Has Permission";
                 Editable=FALSE }
 
     { 1000000007;2;Field  ;
                 ToolTipML=ENU=This will assign the required permission to this user when the wizard completes.;
+                ApplicationArea=#Basic,#Suite;
                 SourceExpr="Assign Permission";
                 Editable=NOT HasPermission }
 
     { 1000000008;2;Field  ;
                 ToolTipML=ENU=This will remove current permission from this user when the wizard completes.;
+                ApplicationArea=#Basic,#Suite;
                 SourceExpr="Remove Permission";
                 Editable=HasPermission }
 
