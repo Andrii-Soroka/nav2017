@@ -2,8 +2,8 @@ OBJECT Codeunit 70009215 G/L Source Name Assisted Setup
 {
   OBJECT-PROPERTIES
   {
-    Date=08.02.17;
-    Time=18:38:30;
+    Date=22.02.17;
+    Time=20:54:32;
     Version List=GLSN10.0;
   }
   PROPERTIES
@@ -18,6 +18,19 @@ OBJECT Codeunit 70009215 G/L Source Name Assisted Setup
       Setup@1000000000 : Record 70009201;
       GLSourceNamesTxt@1000000001 : TextConst 'ENU=Set up G/L Source Names';
       HelpResource@1000000002 : Record 70009202;
+      RequiredPermissionMissingErr@70009200 : TextConst 'ENU=You have not been granted required access rights to start the Assisted Setup.\\The Assisted Setup for G/L Source Names is about assigning the required permissions to users.  To be able to assign permissions you need to be granted either the SUPER og SECURITY permission set.';
+
+    PROCEDURE VerifyUserAccess@8();
+    VAR
+      AccessControl@70009200 : Record 2000000053;
+    BEGIN
+      WITH AccessControl DO BEGIN
+        SETRANGE("User Security ID",USERSECURITYID);
+        SETFILTER("Role ID",'%1|%2','SUPER','SECURITY');
+        IF ISEMPTY THEN
+          ERROR(RequiredPermissionMissingErr);
+      END;
+    END;
 
     [EventSubscriber(Table,1808,OnRegisterAssistedSetup,"",Skip)]
     LOCAL PROCEDURE OnRegisterAssistedSetup@1(VAR TempAggregatedAssistedSetup@70009200 : TEMPORARY Record 1808);

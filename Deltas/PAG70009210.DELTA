@@ -2,8 +2,8 @@ OBJECT Page 70009210 G/L Source Name Setup Wizard
 {
   OBJECT-PROPERTIES
   {
-    Date=20.02.17;
-    Time=09:36:51;
+    Date=22.02.17;
+    Time=20:55:37;
     Version List=GLSN10.0;
   }
   PROPERTIES
@@ -22,7 +22,9 @@ OBJECT Page 70009210 G/L Source Name Setup Wizard
     OnOpenPage=VAR
                  Setup@1000 : Record 70009201;
                  PermissionMgt@1000000000 : Codeunit 70009216;
+                 AssistedSetupMgt@70009200 : Codeunit 70009215;
                BEGIN
+                 AssistedSetupMgt.VerifyUserAccess;
                  INIT;
                  IF NOT Setup.GET THEN BEGIN
                    Setup.INIT;
