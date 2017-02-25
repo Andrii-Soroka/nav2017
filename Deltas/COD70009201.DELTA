@@ -2,8 +2,8 @@ OBJECT Codeunit 70009201 G/L Source Name Mgt
 {
   OBJECT-PROPERTIES
   {
-    Date=12.12.16;
-    Time=12:00:00;
+    Date=25.02.17;
+    Time=09:18:48;
     Version List=GLSN10.0;
   }
   PROPERTIES
@@ -21,15 +21,6 @@ OBJECT Codeunit 70009201 G/L Source Name Mgt
       ProcessInfo@70013402 : TextConst 'ENU=Populating G/L Source Names...';
       RequiredPermissionMissingErr@1000000000 : TextConst 'ENU=Required permissions for table "%1" is missing.  Can''t refresh lookup data.';
       ProcessCompleted@70009200 : TextConst 'ENU=G/L Source Names lookup table update finished';
-
-    [EventSubscriber(Codeunit,1,OnAfterCompanyOpen,"",Skip)]
-    LOCAL PROCEDURE CatchOnCompanyOpen@70013400();
-    VAR
-      GLSourceName@70013400 : Record 70009200;
-    BEGIN
-      IF GLSourceName.WRITEPERMISSION THEN
-        PopulateSourceTable;
-    END;
 
     PROCEDURE AddSource@1035(SourceType@1020 : Option;SourceNo@1021 : Code[20];SourceName@1022 : Text[50]);
     VAR

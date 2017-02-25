@@ -2,8 +2,8 @@ OBJECT Codeunit 70009200 G/L Source Name App Mgt.
 {
   OBJECT-PROPERTIES
   {
-    Date=22.02.17;
-    Time=21:13:57;
+    Date=25.02.17;
+    Time=09:19:43;
     Version List=GLSN10.0;
   }
   PROPERTIES
@@ -39,6 +39,8 @@ OBJECT Codeunit 70009200 G/L Source Name App Mgt.
     END;
 
     PROCEDURE OnNavAppUpgradePerCompany@2();
+    VAR
+      GLSourceNameMgt@70009200 : Codeunit 70009201;
     BEGIN
       NAVAPP.RESTOREARCHIVEDATA(DATABASE::"G/L Source Name Setup");
       NAVAPP.DELETEARCHIVEDATA(DATABASE::"G/L Source Name");
@@ -47,6 +49,7 @@ OBJECT Codeunit 70009200 G/L Source Name App Mgt.
       NAVAPP.DELETEARCHIVEDATA(DATABASE::"G/L Source Name User Access");
       NAVAPP.DELETEARCHIVEDATA(DATABASE::"G/L Source Name Group Access");
 
+      GLSourceNameMgt.PopulateSourceTable;
       RemoveAssistedSetup;
     END;
 
