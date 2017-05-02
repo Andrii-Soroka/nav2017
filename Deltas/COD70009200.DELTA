@@ -2,9 +2,9 @@ OBJECT Codeunit 70009200 G/L Source Name App Mgt.
 {
   OBJECT-PROPERTIES
   {
-    Date=25.02.17;
-    Time=09:19:43;
-    Version List=GLSN10.0;
+    Date=02.05.17;
+    Time=19:04:13;
+    Version List=GLSN10.0.0.1;
   }
   PROPERTIES
   {
@@ -43,6 +43,7 @@ OBJECT Codeunit 70009200 G/L Source Name App Mgt.
       GLSourceNameMgt@70009200 : Codeunit 70009201;
     BEGIN
       NAVAPP.RESTOREARCHIVEDATA(DATABASE::"G/L Source Name Setup");
+      NAVAPP.RESTOREARCHIVEDATA(DATABASE::"G/L Source Name User Setup");
       NAVAPP.DELETEARCHIVEDATA(DATABASE::"G/L Source Name");
 
       NAVAPP.DELETEARCHIVEDATA(DATABASE::"G/L Source Name Help Resource");
