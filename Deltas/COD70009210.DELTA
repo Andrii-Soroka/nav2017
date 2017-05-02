@@ -2,9 +2,9 @@ OBJECT Codeunit 70009210 G/L Source Name Notifications
 {
   OBJECT-PROPERTIES
   {
-    Date=12.12.16;
-    Time=12:00:00;
-    Version List=GLSN10.0;
+    Date=01.05.17;
+    Time=18:23:29;
+    Version List=GLSN10.0.0.1;
   }
   PROPERTIES
   {
@@ -22,10 +22,12 @@ OBJECT Codeunit 70009210 G/L Source Name Notifications
       MissingPermissionNotificationIdTxt@1004 : TextConst '@@@={Locked};ENU=4fa8230a-53e5-4182-8423-373dc6f23f9d';
       MissingPermissionMessageText@1005 : TextConst 'ENU=You don''t have permissions to use our new feature that will show Source Names.  Please contact your administrator.';
       MissingPermissionLinkTxt@1006 : TextConst 'ENU=What should I show?';
+      GLSourceNameUserSetup@1007 : Record 70009205;
 
     [EventSubscriber(Page,20,OnOpenPageEvent,"",Skip,Skip)]
     LOCAL PROCEDURE CatchGLEntriesOpenPage@1(VAR Rec@1000 : Record 17);
     BEGIN
+      IF NOT GLSourceNameUserSetup.WRITEPERMISSION THEN EXIT;
       IF NOT GLSourceName.READPERMISSION THEN
         NotifyOnMissingPermission(Rec)
       ELSE
@@ -36,6 +38,7 @@ OBJECT Codeunit 70009210 G/L Source Name Notifications
     VAR
       MissingPermissionNotification@1001 : Notification;
     BEGIN
+      IF GetNotificationHasBeenShown(GetMissingPermissionNotificationId) THEN EXIT;
       WITH MissingPermissionNotification DO BEGIN
         ID := GetMissingPermissionNotificationId;
         MESSAGE := MissingPermissionMessageText;
@@ -43,12 +46,14 @@ OBJECT Codeunit 70009210 G/L Source Name Notifications
         ADDACTION(MissingPermissionLinkTxt,CODEUNIT::"G/L Source Name Perm. Notif.",'ShowAssistedSetupToUser');
         SEND;
       END;
+      SetNotificationHasBeenShown(GetMissingPermissionNotificationId);
     END;
 
     LOCAL PROCEDURE NotifyOnNewFeature@1000000001(VAR Rec@1000 : Record 17);
     VAR
       NewFeatureNotification@1000000000 : Notification;
     BEGIN
+      IF GetNotificationHasBeenShown(GetNewFeatuerNotificationId) THEN EXIT;
       WITH NewFeatureNotification DO BEGIN
         ID := GetNewFeatuerNotificationId;
         MESSAGE := NewFeatureMessageTxt;
@@ -56,6 +61,7 @@ OBJECT Codeunit 70009210 G/L Source Name Notifications
         ADDACTION(NewFeatureLinkTxt,CODEUNIT::"G/L Source Name Feature Notif.",'ShowDetailsToUser');
         SEND;
       END;
+      SetNotificationHasBeenShown(GetNewFeatuerNotificationId);
     END;
 
     PROCEDURE GetMissingPermissionNotificationId@19() : GUID;
@@ -72,6 +78,21 @@ OBJECT Codeunit 70009210 G/L Source Name Notifications
     BEGIN
       EVALUATE(NewFeatuerNotificationId,NewFeatuerNotificationIdTxt);
       EXIT(NewFeatuerNotificationId);
+    END;
+
+    LOCAL PROCEDURE GetNotificationHasBeenShown@12(NotificationId@1000 : GUID) : Boolean;
+    BEGIN
+      WITH GLSourceNameUserSetup DO
+        EXIT(GET(USERSECURITYID,NotificationId));
+    END;
+
+    LOCAL PROCEDURE SetNotificationHasBeenShown@13(NotificationId@1000 : GUID);
+    BEGIN
+      WITH GLSourceNameUserSetup DO BEGIN
+        "User Security ID" := USERSECURITYID;
+        "Notification Id" := NotificationId;
+        INSERT;
+      END;
     END;
 
     BEGIN
