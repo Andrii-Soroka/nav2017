@@ -1,11 +1,11 @@
 {
+  "branchId": "882d8ba0-d60f-4e5e-a193-b4385040ec7c",
   "navVersion": "10.0.15052.0",
-  "navProduct": "W1",
-  "projectName": "NAV2017",
+  "navSolution": "W1",
+  "projectName": "ObjectRenumbering",
   "baseBranch": "master",
-  "baseObjects": "2017W1.TXT",
+  "storeAllObjects": "false",  
   "uidOffset": "50000",
   "datetimeCulture": "is-IS",
   "versionList": "DYRN10.00"  
 }
-
