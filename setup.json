@@ -1,9 +1,11 @@
 {
+  "branchId": "f94ce6f6-b7bf-4861-9bda-732d55dd53bb",
   "navVersion": "10.0.15052.0",
-  "navProduct": "W1",
-  "projectName": "NAV2017",
-  "baseObjects": "2017W1.TXT",
+  "navSolution": "W1",  
+  "projectName": "W1",
+  "storeAllObjects": "false",
   "objectProperties": "true",
+  "licenseFile": "Advania.flf",  
   "datetimeCulture": "is-IS"
 }
 
